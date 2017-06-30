@@ -1,101 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.BorderPane?>
 
 
-<GridPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-   <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="15.0" minHeight="15.0" prefHeight="15.0" vgrow="NEVER" />
-   </rowConstraints>
-   <children>
-      <AnchorPane GridPane.rowIndex="1">
-         <children>
-            <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <tabs>
-                <Tab text="Transactions">
-                     <content>
-                        <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="NEVER" />
-                              <ColumnConstraints hgrow="ALWAYS" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="ALWAYS" />
-                          </rowConstraints>
-                           <children>
-                              <TableView GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
-                                <columns>
-                                    <TableColumn minWidth="-1.0" prefWidth="-1.0" text="Date" />
-                                  <TableColumn minWidth="-1.0" prefWidth="-1.0" text="Description" />
-                                  <TableColumn minWidth="-1.0" prefWidth="-1.0" text="Amount" />
-                                    <TableColumn minWidth="-1.0" prefWidth="-1.0" text="Account" />
-                                    <TableColumn minWidth="-1.0" prefWidth="-1.0" text="Type" />
-                                </columns>
-                                 <columnResizePolicy>
-                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                 </columnResizePolicy>
-                                 <GridPane.margin>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                 </GridPane.margin>
-                              </TableView>
-                              <ButtonBar GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-                                <buttons>
-                                  <Button mnemonicParsing="false" text="+" />
-                                    <Button mnemonicParsing="false" text="-" />
-                                    <Button mnemonicParsing="false" text="Search" />
-                                </buttons>
-                                 <GridPane.margin>
-                                    <Insets />
-                                 </GridPane.margin>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </ButtonBar>
-                           </children>
-                        </GridPane>
-                     </content>
-                </Tab>
-                <Tab text="Accounts">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-                </Tab>
-                  <Tab text="Savings">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-                  <Tab text="Budget">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-              </tabs>
-            </TabPane>
-         </children>
-      </AnchorPane>
-      <Label text="Account Overview" GridPane.rowIndex="2" />
-      <MenuBar>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mateoi.money.MainWindowController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -114,5 +30,18 @@
           </Menu>
         </menus>
       </MenuBar>
-   </children>
-</GridPane>
+   </top>
+   <bottom>
+      <Label text="Account Overview" BorderPane.alignment="CENTER_LEFT" />
+   </bottom>
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab fx:id="transactionTab" closable="false" text="Transactions" />
+          <Tab fx:id="accountsTab" closable="false" text="Accounts" />
+            <Tab fx:id="savingsTab" closable="false" text="Savings" />
+            <Tab fx:id="budgetTab" closable="false" text="Budget" />
+        </tabs>
+      </TabPane>
+   </center>
+</BorderPane>
