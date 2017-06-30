@@ -1,5 +1,6 @@
 package com.mateoi.money;
 
+import com.mateoi.money.view.MainWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,9 +11,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("view/MainWindow.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("view/MainWindow.fxml"));
+        Parent root = (Parent) loader.load();
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 1024, 768));
+        MainWindowController controller = loader.getController();
+        controller.populateTabs();
         primaryStage.show();
     }
 
