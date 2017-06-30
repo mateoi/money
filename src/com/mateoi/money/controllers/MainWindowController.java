@@ -1,4 +1,4 @@
-package com.mateoi.money;
+package com.mateoi.money.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
