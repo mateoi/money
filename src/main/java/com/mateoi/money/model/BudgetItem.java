@@ -35,7 +35,15 @@ public class BudgetItem {
 
         this.currency = amount.getCurrency();
         this.remaining.setValue(Money.of(amount.getNumber(), currency));
-        this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
+        this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
+            while (ch.next()) {
+                if (ch.getAddedSize() == 1 && ch.getRemovedSize() == 0) {
+                    processTransaction(ch.getAddedSubList().get(0));
+                } else {
+                    processTransactions();
+                }
+            }
+        });
         this.transactions.addAll(transactions);
 
     }

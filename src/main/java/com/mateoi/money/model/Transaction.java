@@ -28,6 +28,15 @@ public class Transaction {
         this.amount.setValue(amount);
         this.budgetType.setValue(budgetType);
         this.account.setValue(account);
+
+        this.account.addListener((observable, oldValue, newValue) -> {
+            oldValue.getTransactions().remove(Transaction.this);
+            newValue.getTransactions().add(Transaction.this);
+        });
+        this.budgetType.addListener(((observable, oldValue, newValue) -> {
+            oldValue.getTransactions().remove(Transaction.this);
+            newValue.getTransactions().add(Transaction.this);
+        }));
     }
 
     public Date getDate() {

@@ -28,8 +28,8 @@ public class SavingsItem {
         this.account.set(account);
         this.allocation.set(allocation);
 
-        this.goal.addListener((o, newMoney, old) -> this.progress.set((float) (currentAmount.getNumber().doubleValue() / newMoney.getNumber().doubleValue())));
-        this.currentAmount.addListener((o, newMoney, old) -> this.progress.set((float) (newMoney.getNumber().doubleValue() / goal.getNumber().doubleValue())));
+        this.goal.addListener((o, old, newMoney) -> this.progress.set((float) (currentAmount.getNumber().doubleValue() / newMoney.getNumber().doubleValue())));
+        this.currentAmount.addListener((o, old, newMoney) -> this.progress.set((float) (newMoney.getNumber().doubleValue() / goal.getNumber().doubleValue())));
         this.progress.set((float) (currentAmount.getNumber().doubleValue() / goal.getNumber().doubleValue()));
     }
 
