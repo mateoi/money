@@ -44,8 +44,6 @@ public class Account {
         this.currentBalance.setValue(Money.of(startingAmount.getNumber(), currency));
         this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
         this.transactions.addAll(transactions);
-
-        processTransactions();
     }
 
     private void processTransactions() {

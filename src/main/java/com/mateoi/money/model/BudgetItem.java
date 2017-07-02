@@ -122,8 +122,4 @@ public class BudgetItem {
     public ObservableList<Transaction> getTransactions() {
         return transactions;
     }
-
-    public void setTransactions(ObservableList<Transaction> transactions) {
-        this.transactions = transactions;
-    }
 }
