@@ -19,9 +19,9 @@ public class MainState {
 
     private ObservableList<SavingsItem> savingsItems = FXCollections.observableArrayList();
 
-    private Account unknownAccount = new Account("Unknown", Money.of(0, "USD"), 0f);
+    private Account unknownAccount = new Account(-1, "Unknown", Money.of(0, "USD"), 0f);
 
-    private BudgetItem unknownBudget = new BudgetItem(false, "Unknown", Money.of(0, "USD"), false);
+    private BudgetItem unknownBudget = new BudgetItem(-1, false, "Unknown", Money.of(0, "USD"), false);
 
     public MainState(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems, List<SavingsItem> savingsItems) {
         this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());

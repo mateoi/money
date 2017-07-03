@@ -12,6 +12,8 @@ import javax.money.CurrencyUnit;
  * Created by mateo on 30/06/2017.
  */
 public class Account {
+    private final int accountId;
+
     private StringProperty name = new SimpleStringProperty();
 
     private ObjectProperty<Money> startingAmount = new SimpleObjectProperty<>();
@@ -35,7 +37,8 @@ public class Account {
     private ObjectProperty<Money> averageWithdrawal = new SimpleObjectProperty<>();
 
 
-    public Account(String name, Money startingAmount, float interest, Transaction... transactions) {
+    public Account(int id, String name, Money startingAmount, float interest, Transaction... transactions) {
+        accountId = id;
         this.name.set(name);
         this.startingAmount.set(startingAmount);
         this.annualInterest.set(interest);
@@ -52,6 +55,30 @@ public class Account {
             }
         });
         this.transactions.addAll(transactions);
+    }
+
+    public boolean equals(Object o) {
+        if (o != null && o instanceof Account) {
+            Account a = (Account) o;
+            boolean ids = accountId == a.getAccountId();
+            boolean names = name.get().equals(a.getName());
+            boolean starts = startingAmount.get().equals(a.getStartingAmount());
+            boolean interests = annualInterest.get() == a.getAnnualInterest();
+            return ids && names && starts && interests;
+        } else {
+            return false;
+        }
+    }
+
+    public String toString() {
+        String sb = String.valueOf(accountId) +
+                ";" +
+                name.get() +
+                ";" +
+                startingAmount.get().toString() +
+                ";" +
+                annualInterest.get();
+        return sb;
     }
 
     private void processTransactions() {
@@ -204,5 +231,9 @@ public class Account {
 
     public void setAverageWithdrawal(Money averageWithdrawal) {
         this.averageWithdrawal.set(averageWithdrawal);
+    }
+
+    public int getAccountId() {
+        return accountId;
     }
 }

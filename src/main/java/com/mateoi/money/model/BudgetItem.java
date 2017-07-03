@@ -12,6 +12,8 @@ import javax.money.CurrencyUnit;
  * Created by mateo on 30/06/2017.
  */
 public class BudgetItem {
+    private final int itemId;
+
     private BooleanProperty in = new SimpleBooleanProperty();
 
     private StringProperty name = new SimpleStringProperty();
@@ -27,7 +29,8 @@ public class BudgetItem {
     private CurrencyUnit currency;
 
 
-    public BudgetItem(boolean in, String name, Money amount, boolean essential, Transaction... transactions) {
+    public BudgetItem(int id, boolean in, String name, Money amount, boolean essential, Transaction... transactions) {
+        itemId = id;
         this.in.set(in);
         this.name.set(name);
         this.amount.set(amount);
@@ -46,6 +49,33 @@ public class BudgetItem {
         });
         this.transactions.addAll(transactions);
 
+    }
+
+    public boolean equals(Object o) {
+        if (o != null && o instanceof BudgetItem) {
+            BudgetItem b = (BudgetItem) o;
+            boolean ids = itemId == b.getItemId();
+            boolean ins = in.get() == b.isIn();
+            boolean names = name.get().equals(b.getName());
+            boolean amounts = amount.get().equals(b.getAmount());
+            boolean essentials = essential.get() == b.isEssential();
+            return ids && ins && names && amounts && essentials;
+        } else {
+            return false;
+        }
+    }
+
+    public String toString() {
+        String sb = String.valueOf(itemId) +
+                ";" +
+                in.get() +
+                ";" +
+                name.get() +
+                ";" +
+                amount.get().toString() +
+                ";" +
+                essential.get();
+        return sb;
     }
 
     private void processTransactions() {
@@ -129,5 +159,9 @@ public class BudgetItem {
 
     public ObservableList<Transaction> getTransactions() {
         return transactions;
+    }
+
+    public int getItemId() {
+        return itemId;
     }
 }

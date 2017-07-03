@@ -7,6 +7,8 @@ import org.javamoney.moneta.Money;
  * Created by mateo on 02/07/2017.
  */
 public class SavingsItem {
+    private final int savingsId;
+
     private StringProperty name = new SimpleStringProperty();
 
     private ObjectProperty<Money> goal = new SimpleObjectProperty<>();
@@ -21,7 +23,8 @@ public class SavingsItem {
     private FloatProperty allocation = new SimpleFloatProperty();
 
 
-    public SavingsItem(String name, Money goal, Money currentAmount, Account account, float allocation) {
+    public SavingsItem(int id, String name, Money goal, Money currentAmount, Account account, float allocation) {
+        savingsId = id;
         this.name.set(name);
         this.goal.set(goal);
         this.currentAmount.set(currentAmount);
@@ -31,6 +34,33 @@ public class SavingsItem {
         this.goal.addListener((o, old, newMoney) -> this.progress.set((float) (currentAmount.getNumber().doubleValue() / newMoney.getNumber().doubleValue())));
         this.currentAmount.addListener((o, old, newMoney) -> this.progress.set((float) (newMoney.getNumber().doubleValue() / goal.getNumber().doubleValue())));
         this.progress.set((float) (currentAmount.getNumber().doubleValue() / goal.getNumber().doubleValue()));
+    }
+
+    public boolean equals(Object o) {
+        if (o != null && o instanceof SavingsItem) {
+            SavingsItem s = (SavingsItem) o;
+            boolean ids = savingsId == s.getSavingsId();
+            boolean names = name.get().equals(s.getName());
+            boolean goals = goal.get().equals(s.getGoal());
+            boolean accounts = account.get().equals(s.getAccount());
+            boolean allocations = allocation.get() == s.getAllocation();
+            return ids && names && goals && accounts && allocations;
+        } else {
+            return false;
+        }
+    }
+
+    public String toString() {
+        String sb = String.valueOf(savingsId) +
+                ";" +
+                name.get() +
+                ";" +
+                goal.get().toString() +
+                ";" +
+                account.get().getAccountId() +
+                ";" +
+                allocation.get();
+        return sb;
     }
 
     public String getName() {
@@ -99,5 +129,9 @@ public class SavingsItem {
 
     public void setAllocation(float allocation) {
         this.allocation.set(allocation);
+    }
+
+    public int getSavingsId() {
+        return savingsId;
     }
 }

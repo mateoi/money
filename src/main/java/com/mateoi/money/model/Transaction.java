@@ -12,6 +12,8 @@ import java.util.Date;
  * Created by mateo on 30/06/2017.
  */
 public class Transaction {
+    private final int transactionId;
+
     private ObjectProperty<Date> date = new SimpleObjectProperty<>();
 
     private StringProperty description = new SimpleStringProperty();
@@ -22,7 +24,8 @@ public class Transaction {
 
     private ObjectProperty<Account> account = new SimpleObjectProperty<>();
 
-    public Transaction(Date date, String description, Money amount, BudgetItem budgetType, Account account) {
+    public Transaction(int id, Date date, String description, Money amount, BudgetItem budgetType, Account account) {
+        this.transactionId = id;
         this.date.setValue(date);
         this.description.setValue(description);
         this.amount.setValue(amount);
@@ -37,6 +40,36 @@ public class Transaction {
             oldValue.getTransactions().remove(Transaction.this);
             newValue.getTransactions().add(Transaction.this);
         }));
+    }
+
+    public boolean equals(Object o) {
+        if (o != null && o instanceof Transaction) {
+            Transaction t = (Transaction) o;
+            boolean ids = transactionId == t.getTransactionId();
+            boolean dates = this.date.get().equals(t.getDate());
+            boolean descriptions = this.description.get().equals(t.getDescription());
+            boolean budgets = this.budgetType.get().equals(t.getBudgetType());
+            boolean amounts = this.amount.get().equals(t.getAmount());
+            boolean accounts = this.account.get().equals(t.getAccount());
+            return ids && dates && descriptions && budgets && amounts && accounts;
+        } else {
+            return false;
+        }
+    }
+
+    public String toString() {
+        String sb = String.valueOf(transactionId) +
+                ";" +
+                date.get().toString() +
+                ";" +
+                description.get() +
+                ";" +
+                amount.get().toString() +
+                ";" +
+                budgetType.get().getItemId() +
+                ";" +
+                account.get().getAccountId();
+        return sb;
     }
 
     public Date getDate() {
@@ -101,5 +134,9 @@ public class Transaction {
 
     public void setAmount(Money amount) {
         this.amount.set(amount);
+    }
+
+    public int getTransactionId() {
+        return transactionId;
     }
 }
