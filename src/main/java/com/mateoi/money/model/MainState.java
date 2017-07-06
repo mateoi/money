@@ -11,6 +11,8 @@ import java.util.List;
  * Created by mateo on 02/07/2017.
  */
 public class MainState {
+    private final static MainState instance = new MainState();
+
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
 
     private ObservableList<Account> accounts = FXCollections.observableArrayList();
@@ -23,26 +25,69 @@ public class MainState {
 
     private BudgetItem unknownBudget = new BudgetItem(-1, false, "Unknown", Money.of(0, "USD"), false);
 
-    public MainState(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems, List<SavingsItem> savingsItems) {
-        this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
-        this.accounts.addListener((ListChangeListener<? super Account>) ch -> {
+    private MainState() {
+        transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
+        accounts.addListener((ListChangeListener<? super Account>) ch -> {
             while (ch.next()) {
                 for (Account account : ch.getRemoved()) {
                     removeAccount(account);
                 }
             }
         });
-        this.budgetItems.addListener((ListChangeListener<? super BudgetItem>) ch -> {
+        budgetItems.addListener((ListChangeListener<? super BudgetItem>) ch -> {
             while (ch.next()) {
                 for (BudgetItem budgetItem : ch.getRemoved()) {
                     removeBudgetItem(budgetItem);
                 }
             }
         });
+    }
+
+    public static MainState getInstance() {
+        return instance;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("# Accounts");
+        sb.append("\n");
+        for (Account account : accounts) {
+            sb.append("A: ");
+            sb.append(account.toString());
+            sb.append("\n");
+        }
+        sb.append("# Savings");
+        sb.append("\n");
+        for (SavingsItem savingsItem : savingsItems) {
+            sb.append("S: ");
+            sb.append(savingsItem.toString());
+            sb.append("\n");
+
+        }
+        sb.append("# Budgets");
+        sb.append("\n");
+        for (BudgetItem budgetItem : budgetItems) {
+            sb.append("B: ");
+            sb.append(budgetItem.toString());
+            sb.append("\n");
+
+        }
+        sb.append("# Transactions");
+        sb.append("\n");
+        for (Transaction transaction : transactions) {
+            sb.append("T: ");
+            sb.append(transaction.toString());
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems, List<SavingsItem> savings) {
         this.transactions.addAll(transactions);
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
-        this.savingsItems.addAll(savingsItems);
+        this.savingsItems.addAll(savings);
     }
 
     private void removeBudgetItem(BudgetItem budgetItem) {

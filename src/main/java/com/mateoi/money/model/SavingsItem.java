@@ -51,16 +51,17 @@ public class SavingsItem {
     }
 
     public String toString() {
-        String sb = String.valueOf(savingsId) +
+        return String.valueOf(savingsId) +
                 ";" +
                 name.get() +
                 ";" +
                 goal.get().toString() +
                 ";" +
+                currentAmount.get().toString() +
+                ";" +
                 account.get().getAccountId() +
                 ";" +
                 allocation.get();
-        return sb;
     }
 
     public String getName() {
