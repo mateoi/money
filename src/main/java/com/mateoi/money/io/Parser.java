@@ -1,6 +1,7 @@
 package com.mateoi.money.io;
 
 import com.mateoi.money.model.Account;
+import com.mateoi.money.model.BudgetItem;
 import org.javamoney.moneta.Money;
 
 /**
@@ -21,7 +22,7 @@ public class Parser {
     /**
      * Parses an account from a format that should match Account's toString() function.
      *
-     * @param s The toString to parse
+     * @param s The string to parse
      * @return An Account object encoded by this string, without Transaction information, or null if the string isn't
      * formatted properly
      */
@@ -47,4 +48,28 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Psrses a {@link BudgetItem} from a format that should match BudgetItem's toString() function.
+     *
+     * @param s The string to parse
+     * @return A BudgetItem object encoded by this string, without Transaction information, or null if the string isn't
+     * formatted properly
+     */
+    public BudgetItem parseBudgetItem(String s) {
+        String[] parts = s.trim().split(";");
+        if (parts.length == 5) {
+            int id;
+            try {
+                id = Integer.parseInt(parts[0]);
+            } catch (NumberFormatException n) {
+                return null;
+            }
+            boolean in = Boolean.parseBoolean(parts[1]);
+            String name = parts[2];
+            Money amount = Money.parse(parts[3]);
+            boolean essential = Boolean.parseBoolean(parts[4]);
+            return new BudgetItem(id, in, name, amount, essential);
+        }
+        return null;
+    }
 }
