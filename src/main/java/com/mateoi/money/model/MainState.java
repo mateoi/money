@@ -1,5 +1,8 @@
 package com.mateoi.money.model;
 
+import com.mateoi.money.io.FilePrefixes;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -21,9 +24,11 @@ public class MainState {
 
     private ObservableList<SavingsItem> savingsItems = FXCollections.observableArrayList();
 
-    private Account unknownAccount = new Account(-1, "Unknown", Money.of(0, "USD"), 0f);
+    public static final Account UNKNOWN_ACCOUNT = new Account(-1, "Unknown", Money.of(0, "USD"), 0f);
 
-    private BudgetItem unknownBudget = new BudgetItem(-1, false, "Unknown", Money.of(0, "USD"), false);
+    public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.of(0, "USD"), false);
+
+    private IntegerProperty lastTransaction = new SimpleIntegerProperty(0);
 
     private MainState() {
         transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
@@ -53,14 +58,14 @@ public class MainState {
         sb.append("# Accounts");
         sb.append("\n");
         for (Account account : accounts) {
-            sb.append("A: ");
+            sb.append(FilePrefixes.ACCOUNT_PREFIX);
             sb.append(account.toString());
             sb.append("\n");
         }
         sb.append("# Savings");
         sb.append("\n");
         for (SavingsItem savingsItem : savingsItems) {
-            sb.append("S: ");
+            sb.append(FilePrefixes.SAVINGS_PREFIX);
             sb.append(savingsItem.toString());
             sb.append("\n");
 
@@ -68,7 +73,7 @@ public class MainState {
         sb.append("# Budgets");
         sb.append("\n");
         for (BudgetItem budgetItem : budgetItems) {
-            sb.append("B: ");
+            sb.append(FilePrefixes.BUDGET_PREFIX);
             sb.append(budgetItem.toString());
             sb.append("\n");
 
@@ -76,24 +81,28 @@ public class MainState {
         sb.append("# Transactions");
         sb.append("\n");
         for (Transaction transaction : transactions) {
-            sb.append("T: ");
+            sb.append(FilePrefixes.TRANSACTION_PREFIX);
             sb.append(transaction.toString());
             sb.append("\n");
         }
+        sb.append(FilePrefixes.TX_COUNT_PREFIX);
+        sb.append(lastTransaction.get());
+        sb.append("\n");
         return sb.toString();
     }
 
-    public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems, List<SavingsItem> savings) {
+    public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems, List<SavingsItem> savings, int txCount) {
         this.transactions.addAll(transactions);
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
         this.savingsItems.addAll(savings);
+        this.lastTransaction.set(txCount);
     }
 
     private void removeBudgetItem(BudgetItem budgetItem) {
         for (Transaction transaction : transactions) {
             if (transaction.getBudgetType().equals(budgetItem)) {
-                transaction.setBudgetType(unknownBudget);
+                transaction.setBudgetType(UNKNOWN_BUDGET);
             }
         }
     }
@@ -101,20 +110,24 @@ public class MainState {
     private void removeAccount(Account account) {
         for (Transaction transaction : transactions) {
             if (transaction.getAccount().equals(account)) {
-                transaction.setAccount(unknownAccount);
+                transaction.setAccount(UNKNOWN_ACCOUNT);
             }
         }
         for (SavingsItem savingsItem : savingsItems) {
             if (savingsItem.getAccount().equals(account)) {
-                savingsItem.setAccount(unknownAccount);
+                savingsItem.setAccount(UNKNOWN_ACCOUNT);
             }
         }
     }
 
     private void processTransactions() {
         for (Transaction transaction : transactions) {
-            transaction.getAccount().getTransactions().add(transaction);
-            transaction.getBudgetType().getTransactions().add(transaction);
+            if (!transaction.getAccount().getTransactions().contains(transaction)) {
+                transaction.getAccount().getTransactions().add(transaction);
+            }
+            if (!transaction.getBudgetType().getTransactions().contains(transaction)) {
+                transaction.getBudgetType().getTransactions().add(transaction);
+            }
         }
     }
 
@@ -148,5 +161,17 @@ public class MainState {
 
     public void setSavingsItems(ObservableList<SavingsItem> savingsItems) {
         this.savingsItems = savingsItems;
+    }
+
+    public int getLastTransaction() {
+        return lastTransaction.get();
+    }
+
+    public IntegerProperty lastTransactionProperty() {
+        return lastTransaction;
+    }
+
+    public void setLastTransaction(int lastTransaction) {
+        this.lastTransaction.set(lastTransaction);
     }
 }

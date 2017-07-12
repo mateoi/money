@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.javamoney.moneta.Money;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -58,9 +59,10 @@ public class Transaction {
     }
 
     public String toString() {
-        String sb = String.valueOf(transactionId) +
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        return String.valueOf(transactionId) +
                 ";" +
-                date.get().toString() +
+                dateFormat.format(date.get()) +
                 ";" +
                 description.get() +
                 ";" +
@@ -69,7 +71,6 @@ public class Transaction {
                 budgetType.get().getItemId() +
                 ";" +
                 account.get().getAccountId();
-        return sb;
     }
 
     public Date getDate() {
