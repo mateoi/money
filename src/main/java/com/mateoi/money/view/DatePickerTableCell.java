@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatter;
 /**
  * Created by mateo on 20/07/2017.
  */
-public class DatePickerCell<S> extends TableCell<S, LocalDate> {
+public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
     private final DateTimeFormatter formatter;
 
     private final DatePicker datePicker;
 
-    public DatePickerCell() {
+    public DatePickerTableCell() {
         formatter = DateTimeFormatter.ofPattern("dd/mm/yy");
         datePicker = new DatePicker();
 

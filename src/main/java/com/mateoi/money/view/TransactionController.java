@@ -5,9 +5,10 @@ import com.mateoi.money.model.BudgetItem;
 import com.mateoi.money.model.MainState;
 import com.mateoi.money.model.Transaction;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
+import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
 import java.time.LocalDate;
@@ -44,28 +45,42 @@ public class TransactionController {
         accountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
         typeColumn.setCellValueFactory(param -> param.getValue().budgetTypeProperty());
 
-        dateColumn.setCellFactory(c -> new DatePickerCell<>());
-        accountColumn.setCellFactory(c -> new TableCell<Transaction, Account>() {
-            @Override
-            protected void updateItem(Account item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getName());
+        dateColumn.setCellFactory(c -> new DatePickerTableCell<>());
+        accountColumn.setCellFactory(c -> {
+            ChoiceBoxTableCell<Transaction, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
+            cell.setConverter(new StringConverter<Account>() {
+                @Override
+                public String toString(Account account) {
+                    return account.getName();
                 }
-            }
+
+                @Override
+                public Account fromString(String string) {
+                    return MainState.getInstance().getAccounts().stream().
+                            filter(a -> a.getName().equals(string)).
+                            findFirst().
+                            orElse(MainState.UNKNOWN_ACCOUNT);
+                }
+            });
+            return cell;
         });
-        typeColumn.setCellFactory(c -> new TableCell<Transaction, BudgetItem>() {
-            @Override
-            protected void updateItem(BudgetItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getName());
+        typeColumn.setCellFactory(c -> {
+            ChoiceBoxTableCell<Transaction, BudgetItem> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getBudgetItems());
+            cell.setConverter(new StringConverter<BudgetItem>() {
+                @Override
+                public String toString(BudgetItem budget) {
+                    return budget.toString();
                 }
-            }
+
+                @Override
+                public BudgetItem fromString(String string) {
+                    return MainState.getInstance().getBudgetItems().stream().
+                            filter(b -> b.getName().equals(string)).
+                            findFirst().
+                            orElse(MainState.UNKNOWN_BUDGET);
+                }
+            });
+            return cell;
         });
     }
 }
