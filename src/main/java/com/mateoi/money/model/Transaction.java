@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty;
 import org.javamoney.moneta.Money;
 
 import java.text.DateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by mateo on 30/06/2017.
@@ -15,7 +15,7 @@ import java.util.Date;
 public class Transaction {
     private final int transactionId;
 
-    private ObjectProperty<Date> date = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
 
     private StringProperty description = new SimpleStringProperty();
 
@@ -25,7 +25,7 @@ public class Transaction {
 
     private ObjectProperty<Account> account = new SimpleObjectProperty<>();
 
-    public Transaction(int id, Date date, String description, Money amount, BudgetItem budgetType, Account account) {
+    public Transaction(int id, LocalDate date, String description, Money amount, BudgetItem budgetType, Account account) {
         this.transactionId = id;
         this.date.setValue(date);
         this.description.setValue(description);
@@ -73,7 +73,7 @@ public class Transaction {
                 account.get().getAccountId();
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date.get();
     }
 
@@ -90,7 +90,7 @@ public class Transaction {
         return account.get();
     }
 
-    public ObjectProperty<Date> dateProperty() {
+    public ObjectProperty<LocalDate> dateProperty() {
         return date;
     }
 
@@ -107,7 +107,7 @@ public class Transaction {
         return account;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date.set(date);
     }
 
