@@ -1,9 +1,12 @@
 package com.mateoi.money.model;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -36,6 +39,9 @@ public class Account {
 
     private ObjectProperty<Money> averageWithdrawal = new SimpleObjectProperty<>();
 
+    private ObservableMap<Transaction, ObjectProperty<Money>> transactionsMap = FXCollections.observableHashMap();
+
+    private IntegerBinding txNumber = Bindings.size(transactions);
 
     public Account(int id, String name, Money startingAmount, float interest, Transaction... transactions) {
         accountId = id;
@@ -71,17 +77,19 @@ public class Account {
     }
 
     public String toString() {
-        String sb = String.valueOf(accountId) +
+        return String.valueOf(accountId) +
                 ";" +
                 name.get() +
                 ";" +
                 startingAmount.get().toString() +
                 ";" +
                 annualInterest.get();
-        return sb;
     }
 
     private void processTransactions() {
+        currentBalance.set(startingAmount.getValue());
+        minimumBalance.set(startingAmount.getValue());
+        maximumBalance.set(startingAmount.getValue());
         for (Transaction transaction : transactions) {
             processTransaction(transaction);
         }
@@ -96,6 +104,11 @@ public class Account {
         currentBalance.set(balance);
         updateMaxMin();
         updateAvg();
+        if (transactionsMap.containsKey(transaction)) {
+            transactionsMap.get(transaction).set(balance);
+        } else {
+            transactionsMap.put(transaction, new SimpleObjectProperty<>(balance));
+        }
     }
 
     private void updateAvg() {
@@ -233,7 +246,31 @@ public class Account {
         this.averageWithdrawal.set(averageWithdrawal);
     }
 
+    public Money getCurrentBalance() {
+        return currentBalance.get();
+    }
+
+    public ObjectProperty<Money> currentBalanceProperty() {
+        return currentBalance;
+    }
+
+    public void setCurrentBalance(Money currentBalance) {
+        this.currentBalance.set(currentBalance);
+    }
+
+    public ObjectProperty<Money> balanceAtTransactionProperty(Transaction transaction) {
+        return transactionsMap.get(transaction);
+    }
+
     public int getAccountId() {
         return accountId;
+    }
+
+    public Number getTxNumber() {
+        return txNumber.get();
+    }
+
+    public IntegerBinding txNumberProperty() {
+        return txNumber;
     }
 }
