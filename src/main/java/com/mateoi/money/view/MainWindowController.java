@@ -10,16 +10,16 @@ import java.io.IOException;
 public class MainWindowController {
 
     @FXML
-    Tab transactionTab;
+    private Tab transactionTab;
 
     @FXML
-    Tab accountsTab;
+    private Tab accountsTab;
 
     @FXML
-    Tab savingsTab;
+    private Tab savingsTab;
 
     @FXML
-    Tab budgetTab;
+    private Tab budgetTab;
 
     @FXML
     private void initialize() {
@@ -27,13 +27,13 @@ public class MainWindowController {
 
     public void populateTabs() {
         try {
-            Node transaction = FXMLLoader.load(getClass().getResource("TransactionTab.fxml"));
+            Node transaction = FXMLLoader.load(getClass().getResource("/TransactionTab.fxml"));
             transactionTab.setContent(transaction);
-            Node accounts = FXMLLoader.load(getClass().getResource("AccountsTab.fxml"));
+            Node accounts = FXMLLoader.load(getClass().getResource("/AccountsTab.fxml"));
             accountsTab.setContent(accounts);
-            Node savings = FXMLLoader.load(getClass().getResource("SavingsTab.fxml"));
+            Node savings = FXMLLoader.load(getClass().getResource("/SavingsTab.fxml"));
             savingsTab.setContent(savings);
-            Node budget = FXMLLoader.load(getClass().getResource("BudgetTab.fxml"));
+            Node budget = FXMLLoader.load(getClass().getResource("/BudgetTab.fxml"));
             budgetTab.setContent(budget);
         } catch (IOException e) {
             e.printStackTrace();

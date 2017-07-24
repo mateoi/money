@@ -3,9 +3,8 @@ package com.mateoi.money.io;
 import com.mateoi.money.model.*;
 import org.javamoney.moneta.Money;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -141,10 +140,10 @@ public class Parser {
             } catch (NumberFormatException n) {
                 return null;
             }
-            Date date;
+            LocalDate date;
             try {
-                date = DateFormat.getDateInstance().parse(parts[1]);
-            } catch (ParseException e) {
+                date = LocalDate.parse(parts[1]);
+            } catch (DateTimeParseException e) {
                 return null;
             }
             String description = parts[2];

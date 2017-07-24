@@ -7,6 +7,7 @@ import com.mateoi.money.model.Transaction;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -85,16 +86,22 @@ public class AccountsController {
 
     private ObjectProperty<Account> selectedAccount = new SimpleObjectProperty<>();
 
+    private ChangeListener<Number> transactionNumberListener = (observable, oldValue, newValue) ->
+            txNumberLabel.setText(Integer.toString(newValue.intValue()));
+
+
     @FXML
     private void initialize() {
         initializeMainTable();
-        mainTable.getSelectionModel().selectedItemProperty().addListener((obs, o, newValue) -> {
+        mainTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (oldValue != null) {
+                oldValue.txNumberProperty().removeListener(transactionNumberListener);
+            }
             if (newValue != null) {
-                selectedAccount.set(newValue);
+                initializeLabels(newValue);
             }
         });
         initializeTxTable();
-        initializeLabels();
     }
 
     private void initializeMainTable() {
@@ -146,16 +153,18 @@ public class AccountsController {
         });
     }
 
-    private void initializeLabels() {
-        nameLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getName(), selectedAccount));
-        balanceLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getCurrentBalance().toString(), selectedAccount));
-        minBalanceLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getMinimumBalance().toString(), selectedAccount));
-        maxBalanceLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getMaximumBalance().toString(), selectedAccount));
-        avgBalanceLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getAverageBalance().toString(), selectedAccount));
-        avgDepositLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getAverageDeposit().toString(), selectedAccount));
-        avgWithdrawalLabel.textProperty().bind(Bindings.createStringBinding(() -> selectedAccount.getValue().getAverageWithdrawal().toString(), selectedAccount));
-        txNumberLabel.textProperty().bind(Bindings.createIntegerBinding(() -> selectedAccount.getValue().getTxNumber().intValue(), selectedAccount, selectedAccount.getValue().txNumberProperty()).asString());
-        interestLabel.textProperty().bind(Bindings.createFloatBinding(() -> selectedAccount.getValue().getAnnualInterest(), selectedAccount).asString());
+    private void initializeLabels(Account account) {
+        account.txNumberProperty().addListener(transactionNumberListener);
+
+        nameLabel.setText(account.getName());
+        balanceLabel.setText(account.getCurrentBalance().toString());
+        minBalanceLabel.setText(account.getMinimumBalance().toString());
+        maxBalanceLabel.setText(account.getMaximumBalance().toString());
+        avgBalanceLabel.setText(account.getAverageBalance().toString());
+        avgDepositLabel.setText(account.getAverageDeposit().toString());
+        avgWithdrawalLabel.setText(account.getAverageWithdrawal().toString());
+        txNumberLabel.setText(Integer.toString(account.getTxNumber().intValue()));
+        interestLabel.setText(Float.toString(account.getAnnualInterest()));
     }
 
 }
