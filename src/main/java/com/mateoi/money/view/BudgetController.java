@@ -5,6 +5,7 @@ import com.mateoi.money.model.Budgets;
 import com.mateoi.money.model.MainState;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -64,6 +65,17 @@ public class BudgetController {
         inColumn.setCellFactory(c -> new InOutTableCell<>());
         essentialColumn.setCellFactory(c -> new CheckBoxTableCell<>());
         amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getAmount())));
+        remainingColumn.setCellFactory(c -> new TableCell<BudgetItem, Money>() {
+            @Override
+            protected void updateItem(Money item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("");
+                } else {
+                    setText(MoneyStringConverter.formatMoney(item));
+                }
+            }
+        });
 
         totalInLabel.textProperty().bind(Budgets.getInstance().totalInProperty().asString());
         totalOutLabel.textProperty().bind(Budgets.getInstance().totalOutProperty().asString());

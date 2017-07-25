@@ -2,9 +2,14 @@ package com.mateoi.money.view;
 
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
+import org.javamoney.moneta.format.CurrencyStyle;
 
 import javax.money.UnknownCurrencyException;
+import javax.money.format.AmountFormatQueryBuilder;
+import javax.money.format.MonetaryAmountFormat;
+import javax.money.format.MonetaryFormats;
 import javax.money.format.MonetaryParseException;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 /**
@@ -17,9 +22,14 @@ public class MoneyStringConverter extends StringConverter<Money> {
         this.amountSupplier = amountSupplier;
     }
 
+    public static String formatMoney(Money amount) {
+        MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(Locale.US).set(CurrencyStyle.SYMBOL).set("pattern", "¤#,##0.00;¤#,##0.00").build());
+        return format.format(amount);
+    }
+
     @Override
-    public String toString(Money object) {
-        return object.toString();
+    public String toString(Money amount) {
+        return formatMoney(amount);
     }
 
     @Override

@@ -10,6 +10,8 @@ import javafx.collections.ObservableMap;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
 
 /**
  * Created by mateo on 30/06/2017.
@@ -99,11 +101,12 @@ public class Account {
     }
 
     private void processTransaction(Transaction transaction) {
-        if (!currency.equals(transaction.getAmount().getCurrency())) {
-            return;
-        }
+        //if (currency.equals(transaction.getAmount().getCurrency())) {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
+        Money amount = transaction.getAmount().with(conversion);
+
         Money balance = currentBalance.get();
-        balance = balance.add(transaction.getAmount());
+        balance = balance.add(amount);
         currentBalance.set(balance);
         updateMaxMin();
         updateAvg();
@@ -112,6 +115,7 @@ public class Account {
         } else {
             transactionsMap.put(transaction, new SimpleObjectProperty<>(balance));
         }
+        //}
     }
 
     private void updateAvg() {
@@ -122,7 +126,8 @@ public class Account {
         int numberOfWithdrawals = 0;
 
         for (Transaction transaction : transactions) {
-            Money amount = transaction.getAmount();
+            CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
+            Money amount = transaction.getAmount().with(conversion);
             total = total.add(amount);
             if (amount.isPositive()) {
                 totalDeposits = totalDeposits.add(amount);
@@ -160,7 +165,7 @@ public class Account {
         this.name.set(name);
     }
 
-    public Object getStartingAmount() {
+    public Money getStartingAmount() {
         return startingAmount.get();
     }
 

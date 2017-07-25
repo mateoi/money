@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
 
 /**
  * Created by mateo on 30/06/2017.
@@ -86,11 +88,10 @@ public class BudgetItem {
     }
 
     private void processTransaction(Transaction transaction) {
-        if (!currency.equals(transaction.getAmount().getCurrency())) {
-            return;
-        }
+        CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
+        Money amount = transaction.getAmount().with(conversion);
         Money balance = remaining.get();
-        balance = balance.add(transaction.getAmount());
+        balance = balance.add(amount);
         remaining.set(balance);
     }
 

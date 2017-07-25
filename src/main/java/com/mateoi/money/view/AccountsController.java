@@ -87,16 +87,13 @@ public class AccountsController {
 
     private ObjectProperty<Account> selectedAccount = new SimpleObjectProperty<>();
 
-    private ChangeListener<Number> transactionNumberListener = (observable, oldValue, newValue) ->
-            txNumberLabel.setText(Integer.toString(newValue.intValue()));
-
 
     @FXML
     private void initialize() {
         initializeMainTable();
         mainTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (oldValue != null) {
-                oldValue.txNumberProperty().removeListener(transactionNumberListener);
+                removeListeners(oldValue);
             }
             if (newValue != null) {
                 selectedAccount.set(newValue);
@@ -105,6 +102,7 @@ public class AccountsController {
         });
         initializeTxTable();
     }
+
 
     private void initializeMainTable() {
         mainTable.setItems(MainState.getInstance().getAccounts());
@@ -162,17 +160,64 @@ public class AccountsController {
     }
 
     private void initializeLabels(Account account) {
-        account.txNumberProperty().addListener(transactionNumberListener);
-
+        addLabelListeners(account);
         nameLabel.setText(account.getName());
-        balanceLabel.setText(account.getCurrentBalance().toString());
-        minBalanceLabel.setText(account.getMinimumBalance().toString());
-        maxBalanceLabel.setText(account.getMaximumBalance().toString());
-        avgBalanceLabel.setText(account.getAverageBalance().toString());
-        avgDepositLabel.setText(account.getAverageDeposit().toString());
-        avgWithdrawalLabel.setText(account.getAverageWithdrawal().toString());
+        balanceLabel.setText(MoneyStringConverter.formatMoney(account.getCurrentBalance()));
+        minBalanceLabel.setText(MoneyStringConverter.formatMoney(account.getMinimumBalance()));
+        maxBalanceLabel.setText(MoneyStringConverter.formatMoney(account.getMaximumBalance()));
+        avgBalanceLabel.setText(MoneyStringConverter.formatMoney(account.getAverageBalance()));
+        avgDepositLabel.setText(MoneyStringConverter.formatMoney(account.getAverageDeposit()));
+        avgWithdrawalLabel.setText(MoneyStringConverter.formatMoney(account.getAverageWithdrawal()));
         txNumberLabel.setText(Integer.toString(account.getTxNumber().intValue()));
         interestLabel.setText(Float.toString(account.getAnnualInterest()));
+
+
     }
+
+    private ChangeListener<String> nameListener = (observable, oldValue, newValue) -> nameLabel.setText(newValue);
+
+    private ChangeListener<Money> balanceListener = (observable, oldValue, newValue) -> balanceLabel.setText(MoneyStringConverter.formatMoney(newValue));
+
+    private ChangeListener<Money> minBalanceListener = (observable, oldValue, newValue) -> minBalanceLabel.setText(MoneyStringConverter.formatMoney(newValue));
+
+    private ChangeListener<Money> maxBalanceListener = (observable, oldValue, newValue) -> maxBalanceLabel.setText(MoneyStringConverter.formatMoney(newValue));
+
+    private ChangeListener<Money> avgBalanceListener = (observable, oldValue, newValue) -> avgBalanceLabel.setText(MoneyStringConverter.formatMoney(newValue));
+
+    private ChangeListener<Money> avgDepositListener = (observable, oldValue, newValue) -> avgDepositLabel.setText(MoneyStringConverter.formatMoney(newValue));
+
+    private ChangeListener<Money> avgWithdrawalListener = (observable, oldValue, newValue) -> avgWithdrawalLabel.setText(MoneyStringConverter.formatMoney(newValue));
+
+    private ChangeListener<Number> transactionNumberListener = (observable, oldValue, newValue) ->
+            txNumberLabel.setText(Integer.toString(newValue.intValue()));
+
+
+    private ChangeListener<Number> interestListener = (observable, oldValue, newValue) -> interestLabel.setText(newValue.toString());
+
+
+    private void addLabelListeners(Account account) {
+        account.nameProperty().addListener(nameListener);
+        account.currentBalanceProperty().addListener(balanceListener);
+        account.minimumBalanceProperty().addListener(minBalanceListener);
+        account.maximumBalanceProperty().addListener(maxBalanceListener);
+        account.averageBalanceProperty().addListener(avgBalanceListener);
+        account.averageDepositProperty().addListener(avgDepositListener);
+        account.averageWithdrawalProperty().addListener(avgWithdrawalListener);
+        account.txNumberProperty().addListener(transactionNumberListener);
+        account.annualInterestProperty().addListener(interestListener);
+    }
+
+    private void removeListeners(Account account) {
+        account.nameProperty().removeListener(nameListener);
+        account.currentBalanceProperty().removeListener(balanceListener);
+        account.minimumBalanceProperty().removeListener(minBalanceListener);
+        account.maximumBalanceProperty().removeListener(maxBalanceListener);
+        account.averageBalanceProperty().removeListener(avgBalanceListener);
+        account.averageDepositProperty().removeListener(avgDepositListener);
+        account.averageWithdrawalProperty().removeListener(avgWithdrawalListener);
+        account.txNumberProperty().removeListener(transactionNumberListener);
+        account.annualInterestProperty().removeListener(interestListener);
+    }
+
 
 }
