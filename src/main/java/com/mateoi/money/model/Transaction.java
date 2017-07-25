@@ -37,16 +37,28 @@ public class Transaction {
         this.account.setValue(account);
 
         this.amount.addListener((observable, oldValue, newValue) -> {
-            this.account.get().processTransactions();
-            this.budgetType.get().processTransactions();
+            if (this.account.get() != null) {
+                this.account.get().processTransactions();
+            }
+            if (this.budgetType.get() != null) {
+                this.budgetType.get().processTransactions();
+            }
         });
         this.account.addListener((observable, oldValue, newValue) -> {
-            oldValue.getTransactions().remove(Transaction.this);
-            newValue.getTransactions().add(Transaction.this);
+            if (oldValue != null) {
+                oldValue.getTransactions().remove(Transaction.this);
+            }
+            if (newValue != null) {
+                newValue.getTransactions().add(Transaction.this);
+            }
         });
         this.budgetType.addListener(((observable, oldValue, newValue) -> {
-            oldValue.getTransactions().remove(Transaction.this);
-            newValue.getTransactions().add(Transaction.this);
+            if (oldValue != null) {
+                oldValue.getTransactions().remove(Transaction.this);
+            }
+            if (newValue != null) {
+                newValue.getTransactions().add(Transaction.this);
+            }
         }));
     }
 

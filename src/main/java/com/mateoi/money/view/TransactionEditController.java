@@ -139,4 +139,8 @@ public class TransactionEditController {
         typeChoiceBox.getSelectionModel().select(transaction.getBudgetType());
         accountChoiceBox.getSelectionModel().select(transaction.getAccount());
     }
+
+    public boolean isOkPressed() {
+        return okPressed;
+    }
 }

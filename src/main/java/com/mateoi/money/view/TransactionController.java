@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
+import javax.money.Monetary;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -47,6 +48,17 @@ public class TransactionController {
         table.setOnKeyPressed(event -> {
             if (event.isControlDown() && event.getCode() == KeyCode.E) {
                 onEditTransaction();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                table.getSelectionModel().select(null);
+            }
+        });
+        table.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                if (table.getSelectionModel().getSelectedItem() == null) {
+                    onAddTransaction();
+                } else {
+                    table.getSelectionModel().select(null);
+                }
             }
         });
 
@@ -116,7 +128,18 @@ public class TransactionController {
 
     }
 
-    private void editTransaction(Transaction transaction) {
+    @FXML
+    private void onAddTransaction() {
+        int newId = MainState.getInstance().getLastTransaction() + 1;
+        Transaction newTransaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Monetary.getCurrency("USD")), null, null);
+        Transaction result = editTransaction(newTransaction);
+        if (result != null) {
+            MainState.getInstance().setLastTransaction(newId);
+            MainState.getInstance().getTransactions().add(result);
+        }
+    }
+
+    private Transaction editTransaction(Transaction transaction) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/TransactionEditDialog.fxml"));
@@ -131,9 +154,14 @@ public class TransactionController {
             controller.setDialogStage(dialogStage);
 
             dialogStage.showAndWait();
+
+            if (controller.isOkPressed()) {
+                return controller.getTransaction();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void setPrimaryStage(Stage primaryStage) {

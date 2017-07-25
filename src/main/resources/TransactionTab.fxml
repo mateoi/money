@@ -39,7 +39,7 @@
             </TableView>
             <ButtonBar GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                <buttons>
-                  <Button mnemonicParsing="false" text="+" />
+                  <Button mnemonicParsing="false" onAction="#onAddTransaction" text="+" />
                   <Button mnemonicParsing="false" onAction="#onRemoveTransaction" text="-" />
                   <Button mnemonicParsing="false" onAction="#onEditTransaction" text="Edit" />
                </buttons>
