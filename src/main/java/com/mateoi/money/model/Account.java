@@ -101,7 +101,6 @@ public class Account {
     }
 
     private void processTransaction(Transaction transaction) {
-        //if (currency.equals(transaction.getAmount().getCurrency())) {
         CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
         Money amount = transaction.getAmount().with(conversion);
 
@@ -115,7 +114,6 @@ public class Account {
         } else {
             transactionsMap.put(transaction, new SimpleObjectProperty<>(balance));
         }
-        //}
     }
 
     private void updateAvg() {

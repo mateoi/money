@@ -23,6 +23,9 @@ public class MoneyStringConverter extends StringConverter<Money> {
     }
 
     public static String formatMoney(Money amount) {
+        if (amount == null) {
+            return "";
+        }
         MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(AmountFormatQueryBuilder.of(Locale.US).set(CurrencyStyle.SYMBOL).set("pattern", "¤#,##0.00;¤#,##0.00").build());
         return format.format(amount);
     }

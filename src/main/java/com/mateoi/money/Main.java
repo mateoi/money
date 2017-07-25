@@ -14,6 +14,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        FileIO.getInstance().load(Paths.get(getClass().getResource("/ExampleFile.txt").toURI()));
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/MainWindow.fxml"));
         Parent root = loader.load();
@@ -23,7 +24,6 @@ public class Main extends Application {
         controller.populateTabs();
         primaryStage.show();
 
-        FileIO.getInstance().load(Paths.get(getClass().getResource("/ExampleFile.txt").toURI()));
 
     }
 

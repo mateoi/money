@@ -77,12 +77,18 @@ public class BudgetController {
             }
         });
 
-        totalInLabel.textProperty().bind(Budgets.getInstance().totalInProperty().asString());
-        totalOutLabel.textProperty().bind(Budgets.getInstance().totalOutProperty().asString());
-        totalSavingsLabel.textProperty().bind(Budgets.getInstance().totalToSavingsProperty().asString());
-        totalEssentialsLabel.textProperty().bind(Budgets.getInstance().totalEssentialsProperty().asString());
-        totalNonEssentialsLabel.textProperty().bind(Budgets.getInstance().totalExtrasProperty().asString());
+        totalInLabel.setText(MoneyStringConverter.formatMoney(Budgets.getInstance().getTotalIn()));
+        totalOutLabel.setText(MoneyStringConverter.formatMoney(Budgets.getInstance().getTotalOut()));
+        totalSavingsLabel.setText(MoneyStringConverter.formatMoney(Budgets.getInstance().getTotalToSavings()));
+        totalEssentialsLabel.setText(MoneyStringConverter.formatMoney(Budgets.getInstance().getTotalEssentials()));
+        totalNonEssentialsLabel.setText(MoneyStringConverter.formatMoney(Budgets.getInstance().getTotalExtras()));
 
+
+        Budgets.getInstance().totalInProperty().addListener((a, b, amount) -> totalInLabel.setText(MoneyStringConverter.formatMoney(amount)));
+        Budgets.getInstance().totalOutProperty().addListener((a, b, amount) -> totalOutLabel.setText(MoneyStringConverter.formatMoney(amount)));
+        Budgets.getInstance().totalToSavingsProperty().addListener((a, b, amount) -> totalSavingsLabel.setText(MoneyStringConverter.formatMoney(amount)));
+        Budgets.getInstance().totalEssentialsProperty().addListener((a, b, amount) -> totalEssentialsLabel.setText(MoneyStringConverter.formatMoney(amount)));
+        Budgets.getInstance().totalExtrasProperty().addListener((a, b, amount) -> totalNonEssentialsLabel.setText(MoneyStringConverter.formatMoney(amount)));
     }
 
 }

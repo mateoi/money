@@ -157,6 +157,17 @@ public class AccountsController {
             });
             return cell;
         });
+        txBalanceColumn.setCellFactory(c -> new TableCell<Transaction, Money>() {
+            @Override
+            protected void updateItem(Money item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("");
+                } else {
+                    setText(MoneyStringConverter.formatMoney(item));
+                }
+            }
+        });
     }
 
     private void initializeLabels(Account account) {
