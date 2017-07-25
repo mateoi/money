@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import org.javamoney.moneta.Money;
 
 
@@ -59,8 +60,10 @@ public class BudgetController {
         remainingColumn.setCellValueFactory(param -> param.getValue().remainingProperty());
         essentialColumn.setCellValueFactory(param -> param.getValue().essentialProperty());
 
+        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         inColumn.setCellFactory(c -> new InOutTableCell<>());
         essentialColumn.setCellFactory(c -> new CheckBoxTableCell<>());
+        amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getAmount())));
 
         totalInLabel.textProperty().bind(Budgets.getInstance().totalInProperty().asString());
         totalOutLabel.textProperty().bind(Budgets.getInstance().totalOutProperty().asString());

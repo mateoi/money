@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
@@ -48,6 +49,9 @@ public class SavingsController {
         accountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
         allocationColumn.setCellValueFactory(param -> param.getValue().allocationProperty());
 
+        goalColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getGoal())));
+        amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getCurrentAmount())));
+        descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         accountColumn.setCellFactory(c -> {
             ChoiceBoxTableCell<SavingsItem, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
             cell.setConverter(new StringConverter<Account>() {

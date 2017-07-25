@@ -7,6 +7,7 @@ import javafx.beans.property.StringProperty;
 import javafx.util.converter.LocalDateStringConverter;
 import org.javamoney.moneta.Money;
 
+import javax.money.CurrencyUnit;
 import java.time.LocalDate;
 
 /**
@@ -25,6 +26,8 @@ public class Transaction {
 
     private ObjectProperty<Account> account = new SimpleObjectProperty<>();
 
+    private CurrencyUnit currency;
+
     public Transaction(int id, LocalDate date, String description, Money amount, BudgetItem budgetType, Account account) {
         this.transactionId = id;
         this.date.setValue(date);
@@ -33,6 +36,10 @@ public class Transaction {
         this.budgetType.setValue(budgetType);
         this.account.setValue(account);
 
+        this.amount.addListener((observable, oldValue, newValue) -> {
+            this.account.get().processTransactions();
+            this.budgetType.get().processTransactions();
+        });
         this.account.addListener((observable, oldValue, newValue) -> {
             oldValue.getTransactions().remove(Transaction.this);
             newValue.getTransactions().add(Transaction.this);

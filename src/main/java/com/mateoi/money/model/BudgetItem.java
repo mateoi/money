@@ -38,6 +38,7 @@ public class BudgetItem {
 
         this.currency = amount.getCurrency();
         this.remaining.setValue(Money.of(amount.getNumber(), currency));
+        this.amount.addListener((observable, oldValue, newValue) -> processTransactions());
         this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
             while (ch.next()) {
                 if (ch.getAddedSize() == 1 && ch.getRemovedSize() == 0) {
@@ -66,7 +67,7 @@ public class BudgetItem {
     }
 
     public String toString() {
-        String sb = String.valueOf(itemId) +
+        return String.valueOf(itemId) +
                 ";" +
                 in.get() +
                 ";" +
@@ -75,10 +76,10 @@ public class BudgetItem {
                 amount.get().toString() +
                 ";" +
                 essential.get();
-        return sb;
     }
 
-    private void processTransactions() {
+    protected void processTransactions() {
+        this.remaining.set(amount.get());
         for (Transaction transaction : transactions) {
             processTransaction(transaction);
         }
@@ -88,13 +89,9 @@ public class BudgetItem {
         if (!currency.equals(transaction.getAmount().getCurrency())) {
             return;
         }
-        Money balance = amount.get();
-        if (in.get()) {
-            balance = balance.subtract(transaction.getAmount());
-        } else {
-            balance = balance.add(transaction.getAmount());
-        }
-        amount.set(balance);
+        Money balance = remaining.get();
+        balance = balance.add(transaction.getAmount());
+        remaining.set(balance);
     }
 
     public boolean isIn() {

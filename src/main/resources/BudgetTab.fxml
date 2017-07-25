@@ -45,7 +45,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
                <items>
-                  <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0">
+                  <TableView fx:id="table" editable="true" prefHeight="200.0" prefWidth="200.0">
                     <columns>
                         <TableColumn fx:id="inColumn" prefWidth="75.0" text="In/Out" />
                       <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name" />

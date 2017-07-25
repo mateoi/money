@@ -14,6 +14,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
@@ -107,11 +108,14 @@ public class AccountsController {
 
     private void initializeMainTable() {
         mainTable.setItems(MainState.getInstance().getAccounts());
+
         nameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         amountColumn.setCellValueFactory(param -> param.getValue().currentBalanceProperty());
         transactionsColumn.setCellValueFactory(param -> Bindings.size(param.getValue().getTransactions()));
         interestColumn.setCellValueFactory(param -> param.getValue().annualInterestProperty());
 
+        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> mainTable.getSelectionModel().getSelectedItem().getCurrentBalance())));
         interestColumn.setCellFactory(c -> new TableCell<Account, Number>() {
             @Override
             protected void updateItem(Number item, boolean empty) {
@@ -122,6 +126,7 @@ public class AccountsController {
                     setText(new DecimalFormat("#.##").format(item.floatValue()) + "%");
                 }
             }
+
         });
     }
 
@@ -133,13 +138,15 @@ public class AccountsController {
         txTypeColumn.setCellValueFactory(param -> param.getValue().budgetTypeProperty());
         txBalanceColumn.setCellValueFactory(param -> selectedAccount.getValue().balanceAtTransactionProperty(param.getValue()));
 
+        txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
+        txAmountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> transactionTable.getSelectionModel().getSelectedItem().getAmount())));
         txTypeColumn.setCellFactory(c -> {
             ChoiceBoxTableCell<Transaction, BudgetItem> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getBudgetItems());
             cell.setConverter(new StringConverter<BudgetItem>() {
                 @Override
                 public String toString(BudgetItem budget) {
-                    return budget.toString();
+                    return budget.getName();
                 }
 
                 @Override

@@ -35,7 +35,7 @@
                   <Insets />
                </GridPane.margin>
             </ButtonBar>
-            <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+            <TableView fx:id="table" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
               <columns>
                 <TableColumn fx:id="descriptionColumn" prefWidth="75.0" text="Description" />
                 <TableColumn fx:id="goalColumn" prefWidth="75.0" text="Goal" />

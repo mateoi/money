@@ -89,7 +89,7 @@ public class Account {
                 annualInterest.get();
     }
 
-    private void processTransactions() {
+    protected void processTransactions() {
         currentBalance.set(startingAmount.getValue());
         minimumBalance.set(startingAmount.getValue());
         maximumBalance.set(startingAmount.getValue());
@@ -276,4 +276,13 @@ public class Account {
     public IntegerBinding txNumberProperty() {
         return txNumber;
     }
+
+    public CurrencyUnit getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(CurrencyUnit currency) {
+        this.currency = currency;
+    }
+
 }
