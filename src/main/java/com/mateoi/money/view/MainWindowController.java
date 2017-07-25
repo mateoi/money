@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -21,14 +22,21 @@ public class MainWindowController {
     @FXML
     private Tab budgetTab;
 
+    private Stage mainStage;
+
     @FXML
     private void initialize() {
     }
 
     public void populateTabs() {
         try {
-            Node transaction = FXMLLoader.load(getClass().getResource("/TransactionTab.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/TransactionTab.fxml"));
+            Node transaction = loader.load();
             transactionTab.setContent(transaction);
+            TransactionController transactionController = loader.getController();
+            transactionController.setPrimaryStage(mainStage);
+            
             Node accounts = FXMLLoader.load(getClass().getResource("/AccountsTab.fxml"));
             accountsTab.setContent(accounts);
             Node savings = FXMLLoader.load(getClass().getResource("/SavingsTab.fxml"));
@@ -39,5 +47,13 @@ public class MainWindowController {
             e.printStackTrace();
         }
 
+    }
+
+    public Stage getMainStage() {
+        return mainStage;
+    }
+
+    public void setMainStage(Stage mainStage) {
+        this.mainStage = mainStage;
     }
 }

@@ -1,4 +1,4 @@
-package com.mateoi.money.view;
+package com.mateoi.money.model;
 
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
@@ -30,6 +30,7 @@ public class MoneyStringConverter extends StringConverter<Money> {
         return format.format(amount);
     }
 
+
     @Override
     public String toString(Money amount) {
         return formatMoney(amount);
@@ -45,7 +46,7 @@ public class MoneyStringConverter extends StringConverter<Money> {
             try {
                 String amountPart = string.replaceAll("[^\\-0-9.]", "");
                 amount = Float.parseFloat(amountPart);
-                String currencyPart = string.replaceAll("[^a-zA-Z]", "");
+                String currencyPart = string.replaceAll("[^a-zA-Z]", "").toUpperCase();
                 return Money.of(amount, currencyPart);
             } catch (NumberFormatException e) {
                 return amountSupplier.get();

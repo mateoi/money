@@ -3,6 +3,7 @@ package com.mateoi.money.view;
 import com.mateoi.money.model.BudgetItem;
 import com.mateoi.money.model.Budgets;
 import com.mateoi.money.model.MainState;
+import com.mateoi.money.model.MoneyStringConverter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;

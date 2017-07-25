@@ -41,7 +41,7 @@
                <buttons>
                   <Button mnemonicParsing="false" text="+" />
                   <Button mnemonicParsing="false" text="-" />
-                  <Button mnemonicParsing="false" text="Search" />
+                  <Button mnemonicParsing="false" onAction="#onEditTransaction" text="Edit" />
                </buttons>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

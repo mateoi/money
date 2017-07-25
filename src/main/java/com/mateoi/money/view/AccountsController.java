@@ -1,9 +1,6 @@
 package com.mateoi.money.view;
 
-import com.mateoi.money.model.Account;
-import com.mateoi.money.model.BudgetItem;
-import com.mateoi.money.model.MainState;
-import com.mateoi.money.model.Transaction;
+import com.mateoi.money.model.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

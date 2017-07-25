@@ -1,17 +1,20 @@
 package com.mateoi.money.view;
 
-import com.mateoi.money.model.Account;
-import com.mateoi.money.model.BudgetItem;
-import com.mateoi.money.model.MainState;
-import com.mateoi.money.model.Transaction;
+import com.mateoi.money.model.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 /**
@@ -36,9 +39,16 @@ public class TransactionController {
     @FXML
     private TableColumn<Transaction, BudgetItem> typeColumn;
 
+    private Stage primaryStage;
+
     @FXML
     private void initialize() {
         table.setItems(MainState.getInstance().getTransactions());
+        table.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.E) {
+                onEditTransaction();
+            }
+        });
 
         dateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         descriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
@@ -85,5 +95,37 @@ public class TransactionController {
             });
             return cell;
         });
+    }
+
+    @FXML
+    private void onEditTransaction() {
+        Transaction transaction = table.getSelectionModel().getSelectedItem();
+        if (transaction != null) {
+            editTransaction(transaction);
+        }
+    }
+
+    private void editTransaction(Transaction transaction) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/TransactionEditDialog.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Edit Transaction");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(loader.load());
+            dialogStage.setScene(scene);
+            TransactionEditController controller = loader.getController();
+            controller.setTransaction(transaction);
+            controller.setDialogStage(dialogStage);
+
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
     }
 }

@@ -2,6 +2,7 @@ package com.mateoi.money.view;
 
 import com.mateoi.money.model.Account;
 import com.mateoi.money.model.MainState;
+import com.mateoi.money.model.MoneyStringConverter;
 import com.mateoi.money.model.SavingsItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
