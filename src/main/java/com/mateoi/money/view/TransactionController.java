@@ -69,7 +69,7 @@ public class TransactionController {
             cell.setConverter(new StringConverter<BudgetItem>() {
                 @Override
                 public String toString(BudgetItem budget) {
-                    return budget.toString();
+                    return budget.getName();
                 }
 
                 @Override

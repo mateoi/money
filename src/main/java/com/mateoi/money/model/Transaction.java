@@ -4,9 +4,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.util.converter.LocalDateStringConverter;
 import org.javamoney.moneta.Money;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 
 /**
@@ -59,10 +59,10 @@ public class Transaction {
     }
 
     public String toString() {
-        DateFormat dateFormat = DateFormat.getDateInstance();
+        LocalDateStringConverter dateFormat = new LocalDateStringConverter();
         return String.valueOf(transactionId) +
                 ";" +
-                dateFormat.format(date.get()) +
+                dateFormat.toString(date.get()) +
                 ";" +
                 description.get() +
                 ";" +

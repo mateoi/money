@@ -8,20 +8,20 @@ import javafx.scene.control.TableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.util.converter.LocalDateStringConverter;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Created by mateo on 20/07/2017.
  */
 public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
-    private final DateTimeFormatter formatter;
+    private final LocalDateStringConverter formatter;
 
     private final DatePicker datePicker;
 
     public DatePickerTableCell() {
-        formatter = DateTimeFormatter.ofPattern("dd/mm/yy");
+        formatter = new LocalDateStringConverter();
         datePicker = new DatePicker();
 
         // Commit edit on Enter and cancel on Escape.
@@ -77,13 +77,13 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
     }
 
     @Override
-    public void updateItem(LocalDate birthday, boolean empty) {
-        super.updateItem(birthday, empty);
-        if (empty || birthday == null) {
+    public void updateItem(LocalDate date, boolean empty) {
+        super.updateItem(date, empty);
+        if (empty || date == null) {
             setText(null);
             setGraphic(null);
         } else {
-            setText(formatter.format(birthday));
+            setText(formatter.toString(date));
             setGraphic(datePicker);
         }
     }

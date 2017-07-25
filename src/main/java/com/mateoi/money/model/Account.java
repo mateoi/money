@@ -51,6 +51,9 @@ public class Account {
 
         this.currency = startingAmount.getCurrency();
         this.currentBalance.setValue(Money.of(startingAmount.getNumber(), currency));
+        currentBalance.set(startingAmount);
+        minimumBalance.set(startingAmount);
+        maximumBalance.set(startingAmount);
         this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
             while (ch.next()) {
                 if (ch.getAddedSize() == 1 && ch.getRemovedSize() == 0) {

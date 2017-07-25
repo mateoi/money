@@ -98,6 +98,7 @@ public class AccountsController {
                 oldValue.txNumberProperty().removeListener(transactionNumberListener);
             }
             if (newValue != null) {
+                selectedAccount.set(newValue);
                 initializeLabels(newValue);
             }
         });

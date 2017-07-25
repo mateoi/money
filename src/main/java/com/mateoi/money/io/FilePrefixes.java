@@ -12,7 +12,7 @@ public class FilePrefixes {
 
     public static final String TRANSACTION_PREFIX = "T: ";
 
-    public static final String TX_COUNT_PREFIX = "TX_COUNT ";
+    public static final String TX_COUNT_PREFIX = "TX_COUNT: ";
 
     private FilePrefixes() {
     }

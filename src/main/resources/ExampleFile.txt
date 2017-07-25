@@ -1,0 +1,40 @@
+# Accounts
+A: 1;Account 1;USD 0;0
+A: 2;Account 2;USD 1000.25;0.25
+A: 4;Account 4;USD 1024;1.25
+
+# Savings
+S: 1;Savings 1 ;USD 1000000;USD 450;2;10
+S: 2;Savings 2;USD 125;USD 0;1;0
+S: 5;Savings 5;USD 25;USD 25;4;0
+S: 3;Savings 3;USD 1500;USD 120;2;90
+
+# Budgets
+B: 1;false;Budget 1;USD 140;false
+B: 2;false;Budget 2;USD 2000;true
+B: 3;true;Budget 3;USD 7400;false
+B: 4;true;Budget 4;USD 41;true
+B: 7;true;Budget 7;USD 7;false
+B: 11;false;Budget 11;USD 654.25;true
+
+# Transactions
+T: 1;2017-05-14;Transaction 1;USD 45;3;2
+T: 2;2017-05-15;Transaction 2;USD 5;11;1
+T: 3;2017-05-16;Transaction 3;USD -45;1;2
+T: 4;2017-05-17;Transaction 4;USD 345;2;1
+T: 5;2017-05-18;Transaction 5;USD -244;3;2
+T: 6;2017-05-19;Transaction 6;USD 5.4;4;4
+T: 8;2017-05-20;Transaction 8;USD -0.41;3;4
+T: 9;2017-05-21;Transaction 9;USD -551;7;4
+T: 10;2017-05-22;Transaction 10;USD -0.9;11;1
+T: 11;2017-05-23;Transaction 11;USD -5.7;3;2
+T: 12;2017-05-24;Transaction 12;USD -4;3;2
+T: 13;2017-05-25;Transaction 13;USD -7;2;2
+T: 14;2017-05-25;Transaction 14;USD -45;1;1
+T: 15;2017-05-25;Transaction 15;USD -1;2;2
+T: 16;2017-05-26;Transaction 16;USD 6;1;2
+T: 17;2017-05-27;Transaction 17;USD 4;1;2
+T: 18;2017-05-28;Transaction 18;USD -2;1;1
+T: 19;2017-05-29;Transaction 19;USD -53;11;2
+
+TX_COUNT: 21

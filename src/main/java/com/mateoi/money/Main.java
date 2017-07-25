@@ -1,11 +1,14 @@
 package com.mateoi.money;
 
+import com.mateoi.money.io.FileIO;
 import com.mateoi.money.view.MainWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.nio.file.Paths;
 
 public class Main extends Application {
 
@@ -19,6 +22,9 @@ public class Main extends Application {
         MainWindowController controller = loader.getController();
         controller.populateTabs();
         primaryStage.show();
+
+        FileIO.getInstance().load(Paths.get(getClass().getResource("/ExampleFile.txt").toURI()));
+
     }
 
 
