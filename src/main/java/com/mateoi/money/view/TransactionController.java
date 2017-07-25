@@ -105,6 +105,17 @@ public class TransactionController {
         }
     }
 
+    @FXML
+    private void onRemoveTransaction() {
+        Transaction transaction = table.getSelectionModel().getSelectedItem();
+        if (transaction != null) {
+            MainState.getInstance().getTransactions().remove(transaction);
+            transaction.getAccount().getTransactions().remove(transaction);
+            transaction.getBudgetType().getTransactions().remove(transaction);
+        }
+
+    }
+
     private void editTransaction(Transaction transaction) {
         try {
             FXMLLoader loader = new FXMLLoader();
