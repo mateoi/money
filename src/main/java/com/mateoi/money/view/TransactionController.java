@@ -50,6 +50,8 @@ public class TransactionController {
                 onEditTransaction();
             } else if (event.getCode() == KeyCode.ESCAPE) {
                 table.getSelectionModel().select(null);
+            } else if (event.getCode() == KeyCode.DELETE) {
+                onRemoveTransaction();
             }
         });
         table.setOnMouseClicked(event -> {

@@ -2,6 +2,7 @@ package com.mateoi.money.view;
 
 import com.mateoi.money.model.Account;
 import com.mateoi.money.model.MoneyStringConverter;
+import com.mateoi.money.model.PercentageStringConverter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -90,14 +91,11 @@ public class AccountEditController {
     }
 
     private void validateInterest() {
-        String string = interestField.getText().replaceAll("[^0-9.]", "");
-        try {
-            float newInterest = Float.parseFloat(string);
-            interestField.setText(newInterest + "%");
-            this.interest = newInterest;
-        } catch (NumberFormatException e) {
-            interestField.setText(interest + "%");
-        }
+        String string = interestField.getText();
+        PercentageStringConverter converter = new PercentageStringConverter(() -> interest);
+        float newInterest = converter.fromString(string).floatValue();
+        interestField.setText(converter.toString(newInterest));
+        this.interest = newInterest;
     }
 
     private boolean validateFields() {
@@ -130,6 +128,6 @@ public class AccountEditController {
         this.interest = account.getAnnualInterest();
         nameField.setText(account.getName());
         startingAmountField.setText(MoneyStringConverter.formatMoney(account.getStartingAmount()));
-        interestField.setText(account.getAnnualInterest() + "%");
+        interestField.setText(PercentageStringConverter.formatNumber(account.getAnnualInterest()));
     }
 }

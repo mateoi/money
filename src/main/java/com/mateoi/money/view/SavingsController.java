@@ -1,9 +1,6 @@
 package com.mateoi.money.view;
 
-import com.mateoi.money.model.Account;
-import com.mateoi.money.model.MainState;
-import com.mateoi.money.model.MoneyStringConverter;
-import com.mateoi.money.model.SavingsItem;
+import com.mateoi.money.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -53,6 +50,8 @@ public class SavingsController {
         goalColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getGoal())));
         amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getCurrentAmount())));
         descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        progressColumn.setCellFactory(TextFieldTableCell.forTableColumn(new PercentageStringConverter(() -> table.getSelectionModel().getSelectedItem().getProgress())));
+        allocationColumn.setCellFactory(TextFieldTableCell.forTableColumn(new PercentageStringConverter(() -> table.getSelectionModel().getSelectedItem().getAllocation())));
         accountColumn.setCellFactory(c -> {
             ChoiceBoxTableCell<SavingsItem, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
             cell.setConverter(new StringConverter<Account>() {

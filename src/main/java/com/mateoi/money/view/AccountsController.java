@@ -19,7 +19,6 @@ import org.javamoney.moneta.Money;
 
 import javax.money.Monetary;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -179,6 +178,8 @@ public class AccountsController {
                 onEditAccount();
             } else if (event.getCode() == KeyCode.ESCAPE) {
                 mainTable.getSelectionModel().select(null);
+            } else if (event.getCode() == KeyCode.DELETE) {
+                onRemoveAccount();
             }
         });
 
@@ -189,18 +190,7 @@ public class AccountsController {
 
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> mainTable.getSelectionModel().getSelectedItem().getCurrentBalance())));
-        interestColumn.setCellFactory(c -> new TableCell<Account, Number>() {
-            @Override
-            protected void updateItem(Number item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(new DecimalFormat("#.##").format(item.floatValue()) + "%");
-                }
-            }
-
-        });
+        interestColumn.setCellFactory(TextFieldTableCell.forTableColumn(new PercentageStringConverter(() -> mainTable.getSelectionModel().getSelectedItem().getAnnualInterest())));
     }
 
     private void initializeTxTable() {

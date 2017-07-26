@@ -1,5 +1,6 @@
 package com.mateoi.money.model;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import org.javamoney.moneta.Money;
 
@@ -31,9 +32,7 @@ public class SavingsItem {
         this.account.set(account);
         this.allocation.set(allocation);
 
-        this.goal.addListener((o, old, newMoney) -> this.progress.set((float) (currentAmount.getNumber().doubleValue() / newMoney.getNumber().doubleValue())));
-        this.currentAmount.addListener((o, old, newMoney) -> this.progress.set((float) (newMoney.getNumber().doubleValue() / goal.getNumber().doubleValue())));
-        this.progress.set((float) (currentAmount.getNumber().doubleValue() / goal.getNumber().doubleValue()));
+        progress.bind(Bindings.createFloatBinding(() -> (float) (100 * this.currentAmount.get().getNumber().doubleValue() / this.goal.get().getNumber().doubleValue()), this.goal, this.currentAmount));
     }
 
     public boolean equals(Object o) {

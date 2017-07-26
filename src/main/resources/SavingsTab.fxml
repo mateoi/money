@@ -40,7 +40,7 @@
                 <TableColumn fx:id="descriptionColumn" prefWidth="75.0" text="Description" />
                 <TableColumn fx:id="goalColumn" prefWidth="75.0" text="Goal" />
                   <TableColumn fx:id="amountColumn" prefWidth="75.0" text="Current amount" />
-                  <TableColumn fx:id="progressColumn" prefWidth="75.0" text="Progress" />
+                  <TableColumn fx:id="progressColumn" editable="false" prefWidth="75.0" text="Progress" />
                   <TableColumn fx:id="accountColumn" prefWidth="75.0" text="Account" />
                   <TableColumn fx:id="allocationColumn" prefWidth="75.0" text="Budget allocation" />
               </columns>
