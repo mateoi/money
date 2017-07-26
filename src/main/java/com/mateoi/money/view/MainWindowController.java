@@ -1,5 +1,6 @@
 package com.mateoi.money.view;
 
+import com.mateoi.money.model.Accounts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -46,6 +47,7 @@ public class MainWindowController {
 
     @FXML
     private void initialize() {
+        accountOverviewLabel.textProperty().bind(Accounts.getInstance().overviewProperty());
     }
 
     @FXML

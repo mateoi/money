@@ -62,16 +62,14 @@ public class Budgets {
         return MainState.getInstance().getBudgetItems().stream().
                 filter(BudgetItem::isIn).
                 map(BudgetItem::getAmount).
-                reduce(Money::add).
-                orElse(ZERO);
+                reduce(ZERO, Money::add);
     }
 
     private Money totalMoneyOut() {
         return MainState.getInstance().getBudgetItems().stream().
                 filter(b -> !b.isIn()).
                 map(BudgetItem::getAmount).
-                reduce(Money::add).
-                orElse(ZERO);
+                reduce(ZERO, Money::add);
     }
 
     private Money calculateEssentials() {
@@ -79,8 +77,7 @@ public class Budgets {
                 filter(BudgetItem::isEssential).
                 filter(b -> !b.isIn()).
                 map(BudgetItem::getAmount).
-                reduce(Money::add).
-                orElse(ZERO);
+                reduce(ZERO, Money::add);
     }
 
     private Money calculateExtras() {
@@ -88,8 +85,7 @@ public class Budgets {
                 filter(b -> !b.isEssential()).
                 filter(b -> !b.isIn()).
                 map(BudgetItem::getAmount).
-                reduce(Money::add).
-                orElse(ZERO);
+                reduce(ZERO, Money::add);
     }
 
     public Money getTotalIn() {
