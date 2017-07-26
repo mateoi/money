@@ -1,16 +1,18 @@
 package com.mateoi.money.view;
 
+import com.mateoi.money.io.FileIO;
 import com.mateoi.money.model.Accounts;
+import com.mateoi.money.model.Settings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class MainWindowController {
 
@@ -48,6 +50,7 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         accountOverviewLabel.textProperty().bind(Accounts.getInstance().overviewProperty());
+        primaryStage.setOnCloseRequest(event -> onClose());
     }
 
     @FXML
@@ -57,18 +60,57 @@ public class MainWindowController {
 
     @FXML
     private void onOpen() {
-
+        FileChooser chooser = new FileChooser();
+        if (Settings.getInstance().getCurrentFile() != null) {
+            chooser.setInitialDirectory(Settings.getInstance().getCurrentFile().getParent().toFile());
+        }
+        chooser.setTitle("Open File");
+        File file = chooser.showOpenDialog(primaryStage);
+        if (file != null) {
+            Path asPath = file.toPath();
+            try {
+                FileIO.getInstance().load(asPath);
+                Settings.getInstance().setCurrentFile(asPath);
+                Settings.getInstance().addRecentFile(asPath);
+            } catch (IOException e) {
+                showError("Could not open file");
+            }
+        }
     }
 
 
     @FXML
     private void onSave() {
-
+        Path path = Settings.getInstance().getCurrentFile();
+        if (path == null) {
+            onSaveAs();
+        } else {
+            try {
+                FileIO.getInstance().save(path);
+            } catch (IOException e) {
+                showError("Could not save file");
+            }
+        }
     }
 
     @FXML
     private void onSaveAs() {
-
+        FileChooser chooser = new FileChooser();
+        if (Settings.getInstance().getCurrentFile() != null) {
+            chooser.setInitialDirectory(Settings.getInstance().getCurrentFile().getParent().toFile());
+        }
+        chooser.setTitle("Save As");
+        File file = chooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            try {
+                Path asPath = file.toPath();
+                FileIO.getInstance().save(asPath);
+                Settings.getInstance().addRecentFile(asPath);
+                Settings.getInstance().setCurrentFile(asPath);
+            } catch (IOException e) {
+                showError("Could not save file");
+            }
+        }
     }
 
     @FXML
@@ -97,6 +139,11 @@ public class MainWindowController {
     @FXML
     private void onPreferences() {
 
+    }
+
+    private void showError(String text) {
+        Alert error = new Alert(Alert.AlertType.ERROR, text, ButtonType.OK);
+        error.showAndWait();
     }
 
     private TabController getSelectedTabController() {

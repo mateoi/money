@@ -4,11 +4,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.util.converter.LocalDateStringConverter;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by mateo on 30/06/2017.
@@ -78,10 +78,9 @@ public class Transaction {
     }
 
     public String toString() {
-        LocalDateStringConverter dateFormat = new LocalDateStringConverter();
         return String.valueOf(transactionId) +
                 ";" +
-                dateFormat.toString(date.get()) +
+                DateTimeFormatter.ISO_DATE.format(date.get()) +
                 ";" +
                 description.get() +
                 ";" +

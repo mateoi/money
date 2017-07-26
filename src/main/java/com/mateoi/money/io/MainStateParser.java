@@ -4,6 +4,7 @@ import com.mateoi.money.model.*;
 import org.javamoney.moneta.Money;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class MainStateParser {
         int accountCount = getCount(lines, FilePrefixes.ACCOUNT_COUNT_PREFIX);
         int savingsCount = getCount(lines, FilePrefixes.SAVINGS_COUNT_PREFIX);
         int budgetCount = getCount(lines, FilePrefixes.BUDGET_COUNT_PREFIX);
+
         MainState.getInstance().initialize(transactions, accounts, budgets, savings, txCount, accountCount, savingsCount, budgetCount);
     }
 
@@ -149,8 +151,9 @@ public class MainStateParser {
             }
             LocalDate date;
             try {
-                date = LocalDate.parse(parts[1]);
+                date = LocalDate.parse(parts[1], DateTimeFormatter.ISO_DATE);
             } catch (DateTimeParseException e) {
+                System.out.println("Couldn't parse " + parts[1]);
                 return null;
             }
             String description = parts[2];

@@ -50,8 +50,6 @@ public class TransactionController extends TabController<Transaction> {
             if (event.getClickCount() == 2) {
                 if (table.getSelectionModel().getSelectedItem() == null) {
                     onAddItem();
-                } else {
-                    table.getSelectionModel().select(null);
                 }
             }
         });

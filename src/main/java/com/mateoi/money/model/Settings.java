@@ -32,6 +32,14 @@ public class Settings {
     }
 
     private Settings() {
+        maxRecentFiles.addListener((a, oldValue, newValue) -> {
+            if (newValue.intValue() <= 0) {
+                maxRecentFiles.set(oldValue.intValue());
+
+            } else if (recentFiles.size() > newValue.intValue()) {
+                recentFiles.remove(0, recentFiles.size() - newValue.intValue());
+            }
+        });
     }
 
     @Override
@@ -41,7 +49,7 @@ public class Settings {
         sb.append(currentFile.get());
         sb.append("\n");
 
-        for (Path path : recentFiles.subList(0, maxRecentFiles.get())) {
+        for (Path path : recentFiles) {
             sb.append(FilePrefixes.SETTINGS_RECENT_FILE_PREFIX);
             sb.append(path);
             sb.append("\n");
@@ -60,6 +68,13 @@ public class Settings {
         sb.append("\n");
 
         return sb.toString();
+    }
+
+    public void addRecentFile(Path path) {
+        recentFiles.add(path);
+        if (recentFiles.size() > maxRecentFiles.get()) {
+            recentFiles.remove(0, recentFiles.size() - maxRecentFiles.get());
+        }
     }
 
     public Path getCurrentFile() {

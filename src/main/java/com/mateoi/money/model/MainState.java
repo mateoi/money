@@ -112,6 +112,7 @@ public class MainState {
 
     public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems,
                            List<SavingsItem> savings, int txCount, int accountCount, int savingsCount, int budgetCount) {
+        clearAll();
         this.transactions.addAll(transactions);
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
@@ -120,6 +121,17 @@ public class MainState {
         this.lastAccount.set(accountCount);
         this.lastSavings.set(savingsCount);
         this.lastBudget.set(budgetCount);
+    }
+
+    public void clearAll() {
+        this.transactions.clear();
+        this.accounts.clear();
+        this.budgetItems.clear();
+        this.savingsItems.clear();
+        this.lastTransaction.set(0);
+        this.lastAccount.set(0);
+        this.lastSavings.set(0);
+        this.lastBudget.set(0);
     }
 
     private void removeBudgetItem(BudgetItem budgetItem) {
@@ -145,11 +157,13 @@ public class MainState {
 
     private void processTransactions() {
         for (Transaction transaction : transactions) {
-            if (!transaction.getAccount().getTransactions().contains(transaction)) {
-                transaction.getAccount().getTransactions().add(transaction);
-            }
-            if (!transaction.getBudgetType().getTransactions().contains(transaction)) {
-                transaction.getBudgetType().getTransactions().add(transaction);
+            if (transaction != null) {
+                if (transaction.getAccount() != null && !transaction.getAccount().getTransactions().contains(transaction)) {
+                    transaction.getAccount().getTransactions().add(transaction);
+                }
+                if (transaction.getBudgetType() != null && !transaction.getBudgetType().getTransactions().contains(transaction)) {
+                    transaction.getBudgetType().getTransactions().add(transaction);
+                }
             }
         }
     }
