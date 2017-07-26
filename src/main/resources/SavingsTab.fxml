@@ -24,9 +24,9 @@
          <children>
             <ButtonBar GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                <buttons>
-                  <Button mnemonicParsing="false" text="+" />
-                  <Button mnemonicParsing="false" text="-" />
-                  <Button mnemonicParsing="false" text="Edit" />
+                  <Button mnemonicParsing="false" onAction="#onAddSavingsItem" text="+" />
+                  <Button mnemonicParsing="false" onAction="#onRemoveSavingsItem" text="-" />
+                  <Button mnemonicParsing="false" onAction="#onEditSavingsItem" text="Edit" />
                </buttons>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

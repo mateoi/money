@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * Created by mateo on 30/06/2017.
  */
-public class AccountsController {
+public class AccountsController extends SubNode {
     @FXML
     private TableView<Account> mainTable;
 
@@ -87,8 +87,6 @@ public class AccountsController {
     private Label interestLabel;
 
     private ObjectProperty<Account> selectedAccount = new SimpleObjectProperty<>();
-
-    private Stage primaryStage;
 
 
     @FXML
@@ -154,7 +152,7 @@ public class AccountsController {
             Stage dialogStage = new Stage();
             dialogStage.setTitle((edit ? "Edit" : "Create New") + " Account");
             dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
+            dialogStage.initOwner(super.getPrimaryStage());
             Scene scene = new Scene(loader.load());
             dialogStage.setScene(scene);
             AccountEditController controller = loader.getController();
@@ -293,9 +291,5 @@ public class AccountsController {
         account.averageWithdrawalProperty().removeListener(avgWithdrawalListener);
         account.txNumberProperty().removeListener(transactionNumberListener);
         account.annualInterestProperty().removeListener(interestListener);
-    }
-
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
     }
 }

@@ -21,7 +21,7 @@ import java.time.LocalDate;
 /**
  * Created by mateo on 30/06/2017.
  */
-public class TransactionController {
+public class TransactionController extends SubNode {
     @FXML
     private TableView<Transaction> table;
 
@@ -40,7 +40,6 @@ public class TransactionController {
     @FXML
     private TableColumn<Transaction, BudgetItem> typeColumn;
 
-    private Stage primaryStage;
 
     @FXML
     private void initialize() {
@@ -148,7 +147,7 @@ public class TransactionController {
             Stage dialogStage = new Stage();
             dialogStage.setTitle((edit ? "Edit" : "Create New") + " Transaction");
             dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
+            dialogStage.initOwner(super.getPrimaryStage());
             Scene scene = new Scene(loader.load());
             dialogStage.setScene(scene);
             TransactionEditController controller = loader.getController();
@@ -166,7 +165,4 @@ public class TransactionController {
         return null;
     }
 
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
 }

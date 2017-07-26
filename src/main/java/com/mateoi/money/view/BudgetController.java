@@ -18,7 +18,7 @@ import java.time.LocalDate;
 /**
  * Created by mateo on 30/06/2017.
  */
-public class BudgetController {
+public class BudgetController extends SubNode {
     @FXML
     private TableView<BudgetItem> table;
 
@@ -69,7 +69,6 @@ public class BudgetController {
 
 
     @FXML
-
     private void initialize() {
         initializeMainTable();
         initializeLabels();

@@ -61,7 +61,7 @@ public class AccountEditController {
                 validateInterest();
                 interestField.cancelEdit();
             } else if (event.getCode() == KeyCode.ESCAPE) {
-                interestField.setText(interest + "%");
+                interestField.setText(PercentageStringConverter.formatNumber(interest));
                 interestField.cancelEdit();
             }
         });

@@ -4,6 +4,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import org.javamoney.moneta.Money;
 
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
+
 /**
  * Created by mateo on 02/07/2017.
  */
@@ -32,7 +35,14 @@ public class SavingsItem {
         this.account.set(account);
         this.allocation.set(allocation);
 
-        progress.bind(Bindings.createFloatBinding(() -> (float) (100 * this.currentAmount.get().getNumber().doubleValue() / this.goal.get().getNumber().doubleValue()), this.goal, this.currentAmount));
+        progress.bind(Bindings.createFloatBinding(this::calculateProgress, this.goal, this.currentAmount));
+    }
+
+    private float calculateProgress() {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(goal.get().getCurrency());
+        Money currentAmount = getCurrentAmount().with(conversion);
+        float absoluteProgress = (float) (currentAmount.getNumber().doubleValue() / goal.get().getNumber().doubleValue());
+        return 100 * absoluteProgress;
     }
 
     public boolean equals(Object o) {

@@ -30,34 +30,25 @@ public class MainWindowController {
 
     public void populateTabs() {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/TransactionTab.fxml"));
-            Node transaction = loader.load();
-            transactionTab.setContent(transaction);
-            TransactionController transactionController = loader.getController();
-            transactionController.setPrimaryStage(primaryStage);
-
-            loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/AccountsTab.fxml"));
-            Node accounts = loader.load();
-            accountsTab.setContent(accounts);
-            AccountsController accountsController = loader.getController();
-            accountsController.setPrimaryStage(primaryStage);
-
-            Node savings = FXMLLoader.load(getClass().getResource("/SavingsTab.fxml"));
-            savingsTab.setContent(savings);
-            Node budget = FXMLLoader.load(getClass().getResource("/BudgetTab.fxml"));
-            budgetTab.setContent(budget);
+            loadTab("/TransactionTab.fxml", transactionTab);
+            loadTab("/AccountsTab.fxml", accountsTab);
+            loadTab("/SavingsTab.fxml", savingsTab);
+            loadTab("/BudgetTab.fxml", budgetTab);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
+    private void loadTab(String fxml, Tab tab) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource(fxml));
+        Node node = loader.load();
+        tab.setContent(node);
+        SubNode controller = loader.getController();
+        controller.setPrimaryStage(primaryStage);
     }
-
+    
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
