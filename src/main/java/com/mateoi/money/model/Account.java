@@ -26,9 +26,7 @@ public class Account {
     private FloatProperty annualInterest = new SimpleFloatProperty();
 
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
-
-    private CurrencyUnit currency;
-
+    
     private ObjectProperty<Money> currentBalance = new SimpleObjectProperty<>();
 
     private ObjectProperty<Money> maximumBalance = new SimpleObjectProperty<>();
@@ -51,8 +49,7 @@ public class Account {
         this.startingAmount.set(startingAmount);
         this.annualInterest.set(interest);
 
-        this.currency = startingAmount.getCurrency();
-        this.currentBalance.setValue(Money.of(startingAmount.getNumber(), currency));
+        this.currentBalance.setValue(Money.of(startingAmount.getNumber(), startingAmount.getCurrency()));
         currentBalance.set(startingAmount);
         minimumBalance.set(startingAmount);
         maximumBalance.set(startingAmount);
@@ -101,7 +98,7 @@ public class Account {
     }
 
     private void processTransaction(Transaction transaction) {
-        CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
+        CurrencyConversion conversion = MonetaryConversions.getConversion(startingAmount.get().getCurrency());
         Money amount = transaction.getAmount().with(conversion);
 
         Money balance = currentBalance.get();
@@ -118,6 +115,7 @@ public class Account {
 
     private void updateAvg() {
         Money total = startingAmount.get();
+        CurrencyUnit currency = startingAmount.get().getCurrency();
         Money totalDeposits = Money.of(0, currency);
         Money totalWithdrawals = Money.of(0, currency);
         int numberOfDeposits = 0;
@@ -143,6 +141,7 @@ public class Account {
     }
 
     private void updateMaxMin() {
+        CurrencyUnit currency = startingAmount.get().getCurrency();
         if (currentBalance.get().isGreaterThan(maximumBalance.get())) {
             maximumBalance.set(Money.of(currentBalance.get().getNumber(), currency));
         }
@@ -279,13 +278,4 @@ public class Account {
     public IntegerBinding txNumberProperty() {
         return txNumber;
     }
-
-    public CurrencyUnit getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(CurrencyUnit currency) {
-        this.currency = currency;
-    }
-
 }

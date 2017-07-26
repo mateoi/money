@@ -113,7 +113,7 @@ public class TransactionController {
     private void onEditTransaction() {
         Transaction transaction = table.getSelectionModel().getSelectedItem();
         if (transaction != null) {
-            editTransaction(transaction);
+            editTransaction(transaction, true);
         }
     }
 
@@ -132,19 +132,19 @@ public class TransactionController {
     private void onAddTransaction() {
         int newId = MainState.getInstance().getLastTransaction() + 1;
         Transaction newTransaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Monetary.getCurrency("USD")), null, null);
-        Transaction result = editTransaction(newTransaction);
+        Transaction result = editTransaction(newTransaction, false);
         if (result != null) {
             MainState.getInstance().setLastTransaction(newId);
             MainState.getInstance().getTransactions().add(result);
         }
     }
 
-    private Transaction editTransaction(Transaction transaction) {
+    private Transaction editTransaction(Transaction transaction, boolean edit) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/TransactionEditDialog.fxml"));
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Edit Transaction");
+            dialogStage.setTitle((edit ? "Edit" : "Create New") + " Transaction");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(loader.load());

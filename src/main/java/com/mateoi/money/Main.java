@@ -22,7 +22,7 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 1024, 768));
         MainWindowController controller = loader.getController();
         controller.populateTabs();
-        controller.setMainStage(primaryStage);
+        controller.setPrimaryStage(primaryStage);
         primaryStage.show();
     }
 

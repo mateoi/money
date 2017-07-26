@@ -42,16 +42,12 @@ public class TransactionEditController {
     private void initialize() {
         amountField.focusedProperty().addListener((a, b, focusedNow) -> {
             if (!focusedNow) {
-                Money newAmount = new MoneyStringConverter(() -> amount).fromString(amountField.getText());
-                amountField.setText(MoneyStringConverter.formatMoney(newAmount));
-                amount = newAmount;
+                validateAmount();
             }
         });
         amountField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
-                Money newAmount = new MoneyStringConverter(() -> amount).fromString(amountField.getText());
-                amountField.setText(MoneyStringConverter.formatMoney(newAmount));
-                amount = newAmount;
+                validateAmount();
                 amountField.cancelEdit();
             } else if (event.getCode() == KeyCode.ESCAPE) {
                 amountField.setText(MoneyStringConverter.formatMoney(amount));
@@ -110,6 +106,12 @@ public class TransactionEditController {
         transaction.setAmount(amount);
         transaction.setBudgetType(typeChoiceBox.getValue());
         transaction.setAccount(accountChoiceBox.getValue());
+    }
+
+    private void validateAmount() {
+        Money newAmount = new MoneyStringConverter(() -> amount).fromString(amountField.getText());
+        amountField.setText(MoneyStringConverter.formatMoney(newAmount));
+        amount = newAmount;
     }
 
     private boolean validateFields() {

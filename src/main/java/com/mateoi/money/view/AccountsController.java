@@ -6,15 +6,21 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
@@ -84,6 +90,8 @@ public class AccountsController {
 
     private ObjectProperty<Account> selectedAccount = new SimpleObjectProperty<>();
 
+    private Stage primaryStage;
+
 
     @FXML
     private void initialize() {
@@ -100,9 +108,57 @@ public class AccountsController {
         initializeTxTable();
     }
 
+    @FXML
+    private void onEditAccount() {
+        Account account = mainTable.getSelectionModel().getSelectedItem();
+        if (account != null) {
+            editAccount(account, true);
+        }
+    }
+
+    @FXML
+    private void onAddAccount() {
+
+    }
+
+    @FXML
+    private void onRemoveAccount() {
+
+    }
+
+    private Account editAccount(Account account, boolean edit) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/AccountEditDialog.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle((edit ? "Edit" : "Create New") + " Account");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(loader.load());
+            dialogStage.setScene(scene);
+            AccountEditController controller = loader.getController();
+            controller.setAccount(account);
+            controller.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+
+            if (controller.isOkPressed()) {
+                return controller.getAccount();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private void initializeMainTable() {
         mainTable.setItems(MainState.getInstance().getAccounts());
+        mainTable.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.E) {
+                onEditAccount();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                mainTable.getSelectionModel().select(null);
+            }
+        });
 
         nameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         amountColumn.setCellValueFactory(param -> param.getValue().currentBalanceProperty());
@@ -227,5 +283,7 @@ public class AccountsController {
         account.annualInterestProperty().removeListener(interestListener);
     }
 
-
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 }
