@@ -76,7 +76,7 @@ public class BudgetController extends TabController<BudgetItem> {
     }
 
     @FXML
-    private void onEditBudget() {
+    void onEditItem() {
         BudgetItem budgetItem = table.getSelectionModel().getSelectedItem();
         if (budgetItem != null) {
             super.editItem(budgetItem, "/BudgetEditDialog.fxml", true);
@@ -84,7 +84,7 @@ public class BudgetController extends TabController<BudgetItem> {
     }
 
     @FXML
-    private void onAddBudget() {
+    void onAddItem() {
         int newId = MainState.getInstance().getLastBudget() + 1;
         BudgetItem budgetItem = new BudgetItem(newId, false, "", Money.zero(Monetary.getCurrency("USD")), false);
         BudgetItem result = super.editItem(budgetItem, "/BudgetEditDialog.fxml", false);
@@ -95,7 +95,7 @@ public class BudgetController extends TabController<BudgetItem> {
     }
 
     @FXML
-    private void onRemoveBudget() {
+    void onRemoveItem() {
         BudgetItem budgetItem = table.getSelectionModel().getSelectedItem();
         if (budgetItem != null) {
             String text = "Are you sure you want to delete the budget type \"" + budgetItem.getName() + "\"?";
@@ -168,12 +168,10 @@ public class BudgetController extends TabController<BudgetItem> {
     private void initializeMainTable() {
         table.setItems(MainState.getInstance().getBudgetItems());
         table.setOnKeyPressed(event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.E) {
-                onEditBudget();
-            } else if (event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 table.getSelectionModel().select(null);
             } else if (event.getCode() == KeyCode.DELETE) {
-                onRemoveBudget();
+                onRemoveItem();
             }
         });
         inColumn.setCellValueFactory(param -> param.getValue().inProperty());

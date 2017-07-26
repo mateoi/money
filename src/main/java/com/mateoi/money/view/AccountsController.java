@@ -100,7 +100,7 @@ public class AccountsController extends TabController<Account> {
     }
 
     @FXML
-    private void onEditAccount() {
+    void onEditItem() {
         Account account = mainTable.getSelectionModel().getSelectedItem();
         if (account != null) {
             super.editItem(account, "/AccountEditDialog.fxml", true);
@@ -108,7 +108,7 @@ public class AccountsController extends TabController<Account> {
     }
 
     @FXML
-    private void onAddAccount() {
+    void onAddItem() {
         int newId = MainState.getInstance().getLastAccount() + 1;
         Account account = new Account(newId, "", Money.zero(Monetary.getCurrency("USD")), 0);
         Account result = super.editItem(account, "/AccountEditDialog.fxml", false);
@@ -119,7 +119,7 @@ public class AccountsController extends TabController<Account> {
     }
 
     @FXML
-    private void onRemoveAccount() {
+    void onRemoveItem() {
         Account account = mainTable.getSelectionModel().getSelectedItem();
         if (account != null) {
             String text = "Are you sure you want to delete the account \"" + account.getName() + "\"?";
@@ -142,12 +142,10 @@ public class AccountsController extends TabController<Account> {
     private void initializeMainTable() {
         mainTable.setItems(MainState.getInstance().getAccounts());
         mainTable.setOnKeyPressed(event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.E) {
-                onEditAccount();
-            } else if (event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 mainTable.getSelectionModel().select(null);
             } else if (event.getCode() == KeyCode.DELETE) {
-                onRemoveAccount();
+                onRemoveItem();
             }
         });
 

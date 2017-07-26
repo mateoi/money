@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by mateo on 26/07/2017.
  */
-class TabController<T> {
+abstract class TabController<T> {
     private Stage primaryStage;
 
     void setPrimaryStage(Stage primaryStage) {
@@ -41,4 +41,10 @@ class TabController<T> {
         }
         return null;
     }
+
+    abstract void onEditItem();
+
+    abstract void onAddItem();
+
+    abstract void onRemoveItem();
 }

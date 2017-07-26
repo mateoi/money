@@ -40,18 +40,16 @@ public class TransactionController extends TabController<Transaction> {
     private void initialize() {
         table.setItems(MainState.getInstance().getTransactions());
         table.setOnKeyPressed(event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.E) {
-                onEditTransaction();
-            } else if (event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 table.getSelectionModel().select(null);
             } else if (event.getCode() == KeyCode.DELETE) {
-                onRemoveTransaction();
+                onRemoveItem();
             }
         });
         table.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 if (table.getSelectionModel().getSelectedItem() == null) {
-                    onAddTransaction();
+                    onAddItem();
                 } else {
                     table.getSelectionModel().select(null);
                 }
@@ -106,7 +104,7 @@ public class TransactionController extends TabController<Transaction> {
     }
 
     @FXML
-    private void onEditTransaction() {
+    void onEditItem() {
         Transaction transaction = table.getSelectionModel().getSelectedItem();
         if (transaction != null) {
             super.editItem(transaction, "/TransactionEditDialog.fxml", true);
@@ -114,7 +112,7 @@ public class TransactionController extends TabController<Transaction> {
     }
 
     @FXML
-    private void onRemoveTransaction() {
+    void onRemoveItem() {
         Transaction transaction = table.getSelectionModel().getSelectedItem();
         if (transaction != null) {
             MainState.getInstance().getTransactions().remove(transaction);
@@ -125,7 +123,7 @@ public class TransactionController extends TabController<Transaction> {
     }
 
     @FXML
-    private void onAddTransaction() {
+    void onAddItem() {
         int newId = MainState.getInstance().getLastTransaction() + 1;
         Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Monetary.getCurrency("USD")), null, null);
         Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);

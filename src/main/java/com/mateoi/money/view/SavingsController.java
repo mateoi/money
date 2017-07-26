@@ -46,15 +46,13 @@ public class SavingsController extends TabController<SavingsItem> {
     private void initialize() {
         table.setItems(MainState.getInstance().getSavingsItems());
         table.setOnKeyPressed(event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.E) {
-                onEditSavingsItem();
-            } else if (event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 table.getSelectionModel().select(null);
             } else if (event.getCode() == KeyCode.DELETE) {
-                onRemoveSavingsItem();
+                onRemoveItem();
             }
         });
-        
+
         descriptionColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         goalColumn.setCellValueFactory(param -> param.getValue().goalProperty());
         amountColumn.setCellValueFactory(param -> param.getValue().currentAmountProperty());
@@ -88,7 +86,7 @@ public class SavingsController extends TabController<SavingsItem> {
     }
 
     @FXML
-    private void onEditSavingsItem() {
+    void onEditItem() {
         SavingsItem savingsItem = table.getSelectionModel().getSelectedItem();
         if (savingsItem != null) {
             super.editItem(savingsItem, "/SavingsEditDialog.fxml", true);
@@ -96,7 +94,7 @@ public class SavingsController extends TabController<SavingsItem> {
     }
 
     @FXML
-    private void onAddSavingsItem() {
+    void onAddItem() {
         int newId = MainState.getInstance().getLastSavings() + 1;
         SavingsItem savingsItem = new SavingsItem(newId, "", Money.zero(Monetary.getCurrency("USD")), Money.zero(Monetary.getCurrency("USD")), null, 0);
         SavingsItem result = super.editItem(savingsItem, "/SavingsEditDialog.fxml", false);
@@ -107,7 +105,7 @@ public class SavingsController extends TabController<SavingsItem> {
     }
 
     @FXML
-    private void onRemoveSavingsItem() {
+    void onRemoveItem() {
         SavingsItem savingsItem = table.getSelectionModel().getSelectedItem();
         if (savingsItem != null) {
             String text = "Are you sure you want to delete the savings goal \"" + savingsItem.getName() + "\"?";
