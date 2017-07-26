@@ -8,10 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
@@ -20,9 +17,11 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
+import javax.money.Monetary;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * Created by mateo on 30/06/2017.
@@ -118,11 +117,34 @@ public class AccountsController {
 
     @FXML
     private void onAddAccount() {
-
+        int newId = MainState.getInstance().getLastAccount() + 1;
+        Account account = new Account(newId, "", Money.zero(Monetary.getCurrency("USD")), 0);
+        Account result = editAccount(account, false);
+        if (result != null) {
+            MainState.getInstance().getAccounts().add(result);
+            MainState.getInstance().setLastAccount(newId);
+        }
     }
 
     @FXML
     private void onRemoveAccount() {
+        Account account = mainTable.getSelectionModel().getSelectedItem();
+        if (account != null) {
+            String text = "Are you sure you want to delete the account \"" + account.getName() + "\"?";
+            int transactions = account.getTransactions().size();
+            if (transactions > 0) {
+                String addendum = "\n" + transactions + " Transaction";
+                addendum += transactions > 1 ? "s" : "";
+                addendum += " will be orphaned.";
+                text += addendum;
+            }
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, text, ButtonType.OK, ButtonType.CANCEL);
+            confirmation.setTitle("Delete Account?");
+            Optional<ButtonType> result = confirmation.showAndWait();
+            if (result.orElse(ButtonType.CANCEL).equals(ButtonType.OK)) {
+                MainState.getInstance().getAccounts().remove(account);
+            }
+        }
 
     }
 

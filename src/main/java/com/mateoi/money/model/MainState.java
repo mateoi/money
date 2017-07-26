@@ -30,6 +30,12 @@ public class MainState {
 
     private IntegerProperty lastTransaction = new SimpleIntegerProperty(0);
 
+    private IntegerProperty lastAccount = new SimpleIntegerProperty(0);
+
+    private IntegerProperty lastSavings = new SimpleIntegerProperty(0);
+
+    private IntegerProperty lastBudget = new SimpleIntegerProperty(0);
+
     private MainState() {
         transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
         accounts.addListener((ListChangeListener<? super Account>) ch -> {
@@ -88,15 +94,32 @@ public class MainState {
         sb.append(FilePrefixes.TX_COUNT_PREFIX);
         sb.append(lastTransaction.get());
         sb.append("\n");
+
+        sb.append(FilePrefixes.ACCOUNT_COUNT_PREFIX);
+        sb.append(lastAccount.get());
+        sb.append("\n");
+
+        sb.append(FilePrefixes.BUDGET_COUNT_PREFIX);
+        sb.append(lastBudget.get());
+        sb.append("\n");
+
+        sb.append(FilePrefixes.SAVINGS_COUNT_PREFIX);
+        sb.append(lastSavings.get());
+        sb.append("\n");
+
         return sb.toString();
     }
 
-    public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems, List<SavingsItem> savings, int txCount) {
+    public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems,
+                           List<SavingsItem> savings, int txCount, int accountCount, int savingsCount, int budgetCount) {
         this.transactions.addAll(transactions);
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
         this.savingsItems.addAll(savings);
         this.lastTransaction.set(txCount);
+        this.lastAccount.set(accountCount);
+        this.lastSavings.set(savingsCount);
+        this.lastBudget.set(budgetCount);
     }
 
     private void removeBudgetItem(BudgetItem budgetItem) {
@@ -173,5 +196,41 @@ public class MainState {
 
     public void setLastTransaction(int lastTransaction) {
         this.lastTransaction.set(lastTransaction);
+    }
+
+    public int getLastAccount() {
+        return lastAccount.get();
+    }
+
+    public IntegerProperty lastAccountProperty() {
+        return lastAccount;
+    }
+
+    public void setLastAccount(int lastAccount) {
+        this.lastAccount.set(lastAccount);
+    }
+
+    public int getLastSavings() {
+        return lastSavings.get();
+    }
+
+    public IntegerProperty lastSavingsProperty() {
+        return lastSavings;
+    }
+
+    public void setLastSavings(int lastSavings) {
+        this.lastSavings.set(lastSavings);
+    }
+
+    public int getLastBudget() {
+        return lastBudget.get();
+    }
+
+    public IntegerProperty lastBudgetProperty() {
+        return lastBudget;
+    }
+
+    public void setLastBudget(int lastBudget) {
+        this.lastBudget.set(lastBudget);
     }
 }

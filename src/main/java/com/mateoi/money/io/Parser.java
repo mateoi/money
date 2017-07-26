@@ -29,17 +29,24 @@ public class Parser {
         List<BudgetItem> budgets = cleanLines(lines, FilePrefixes.BUDGET_PREFIX).map(this::parseBudgetItem).collect(Collectors.toList());
         List<SavingsItem> savings = cleanLines(lines, FilePrefixes.SAVINGS_PREFIX).map(s -> parseSavingsItem(s, accounts)).collect(Collectors.toList());
         List<Transaction> transactions = cleanLines(lines, FilePrefixes.TRANSACTION_PREFIX).map(s -> parseTransaction(s, accounts, budgets)).collect(Collectors.toList());
-        List<String> txCountLine = cleanLines(lines, FilePrefixes.TX_COUNT_PREFIX).collect(Collectors.toList());
-        int txCount = 0;
-        if (txCountLine.size() > 0) {
+        int txCount = getCount(lines, FilePrefixes.TX_COUNT_PREFIX);
+        int accountCount = getCount(lines, FilePrefixes.ACCOUNT_COUNT_PREFIX);
+        int savingsCount = getCount(lines, FilePrefixes.SAVINGS_COUNT_PREFIX);
+        int budgetCount = getCount(lines, FilePrefixes.BUDGET_COUNT_PREFIX);
+        MainState.getInstance().initialize(transactions, accounts, budgets, savings, txCount, accountCount, savingsCount, budgetCount);
+    }
+
+    private int getCount(List<String> lines, String prefix) {
+        List<String> countLine = cleanLines(lines, prefix).collect(Collectors.toList());
+        int count = 0;
+        if (countLine.size() > 0) {
             try {
-                txCount = Integer.parseInt(txCountLine.get(0));
+                count = Integer.parseInt(countLine.get(0));
             } catch (NumberFormatException n) {
-                txCount = 0;
+                count = 0;
             }
         }
-
-        MainState.getInstance().initialize(transactions, accounts, budgets, savings, txCount);
+        return count;
     }
 
     private Stream<String> cleanLines(List<String> lines, String prefix) {
