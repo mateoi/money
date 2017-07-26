@@ -20,6 +20,16 @@ public class FilePrefixes {
 
     public static final String SAVINGS_COUNT_PREFIX = "SAVINGS_COUNT: ";
 
+    public static final String SETTINGS_FILE_PREFIX = "F: ";
+
+    public static final String SETTINGS_RECENT_FILE_PREFIX = "RF: ";
+
+    public static final String SETTINGS_DEFAULT_CURRENCY_PREFIX = "C: ";
+
+    public static final String SETTINGS_COLOR_PREFIX = "COLOR: ";
+
+    public static final String SETTINGS_MAX_RECENT_FILES = "MRF: ";
+
     private FilePrefixes() {
     }
 }

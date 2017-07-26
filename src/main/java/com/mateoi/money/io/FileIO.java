@@ -1,6 +1,7 @@
 package com.mateoi.money.io;
 
 import com.mateoi.money.model.MainState;
+import com.mateoi.money.model.Settings;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,13 +22,23 @@ public class FileIO {
         return instance;
     }
 
-    public void save(String location, MainState state) throws IOException {
+    public void save(String location) throws IOException {
         Path path = Paths.get(location);
-        save(path, state);
+        save(path);
     }
 
-    public void save(Path path, MainState state) throws IOException {
-        String lines = state.toString();
+    public void save(Path path) throws IOException {
+        String lines = MainState.getInstance().toString();
+        Files.write(path, lines.getBytes());
+    }
+
+    public void saveSettings(String location) throws IOException {
+        Path path = Paths.get(location);
+        saveSettings(path);
+    }
+
+    private void saveSettings(Path path) throws IOException {
+        String lines = Settings.getInstance().toString();
         Files.write(path, lines.getBytes());
     }
 
@@ -38,7 +49,17 @@ public class FileIO {
 
     public void load(Path path) throws IOException {
         List<String> lines = Files.readAllLines(path);
-        Parser.getInstance().parseIntoMainState(lines);
+        MainStateParser.getInstance().parseIntoMainState(lines);
+    }
+
+    public void loadSettings(String location) throws IOException {
+        Path path = Paths.get(location);
+        loadSettings(path);
+    }
+
+    public void loadSettings(Path path) throws IOException {
+        List<String> lines = Files.readAllLines(path);
+        SettingsParser.getInstance().parseIntoSettings(lines);
     }
 
 }
