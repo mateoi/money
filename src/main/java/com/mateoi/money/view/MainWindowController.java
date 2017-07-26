@@ -45,10 +45,10 @@ public class MainWindowController {
         loader.setLocation(getClass().getResource(fxml));
         Node node = loader.load();
         tab.setContent(node);
-        SubNode controller = loader.getController();
+        TabController controller = loader.getController();
         controller.setPrimaryStage(primaryStage);
     }
-    
+
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }

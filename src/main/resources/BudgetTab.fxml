@@ -28,10 +28,10 @@
          <children>
             <ButtonBar GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                <buttons>
-                  <Button mnemonicParsing="false" text="+" />
-                  <Button mnemonicParsing="false" text="-" />
-                  <Button mnemonicParsing="false" text="Edit" />
-                  <Button mnemonicParsing="false" text="Flush" />
+                  <Button mnemonicParsing="false" onAction="#onAddBudget" text="+" />
+                  <Button mnemonicParsing="false" onAction="#onRemoveBudget" text="-" />
+                  <Button mnemonicParsing="false" onAction="#onEditBudget" text="Edit" />
+                  <Button mnemonicParsing="false" onAction="#onFlush" text="Flush" />
                </buttons>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

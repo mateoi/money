@@ -4,7 +4,6 @@ import com.mateoi.money.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 /**
  * Created by mateo on 25/07/2017.
  */
-public class TransactionEditController {
+public class TransactionEditController extends EditDialogController<Transaction> {
 
     @FXML
     private DatePicker datePicker;
@@ -30,13 +29,7 @@ public class TransactionEditController {
     @FXML
     private ChoiceBox<Account> accountChoiceBox;
 
-    private Stage dialogStage;
-
-    private Transaction transaction;
-
     private Money amount;
-
-    private boolean okPressed = false;
 
     @FXML
     private void initialize() {
@@ -86,9 +79,9 @@ public class TransactionEditController {
     @FXML
     private void onOK() {
         if (validateFields()) {
-            okPressed = true;
+            setOkPressed(true);
             commitTransaction();
-            dialogStage.close();
+            getDialogStage().close();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill in all fields", ButtonType.OK);
             alert.showAndWait();
@@ -97,15 +90,15 @@ public class TransactionEditController {
 
     @FXML
     private void onCancel() {
-        dialogStage.close();
+        getDialogStage().close();
     }
 
     private void commitTransaction() {
-        transaction.setDate(datePicker.getValue());
-        transaction.setDescription(descriptionField.getText());
-        transaction.setAmount(amount);
-        transaction.setBudgetType(typeChoiceBox.getValue());
-        transaction.setAccount(accountChoiceBox.getValue());
+        item.setDate(datePicker.getValue());
+        item.setDescription(descriptionField.getText());
+        item.setAmount(amount);
+        item.setBudgetType(typeChoiceBox.getValue());
+        item.setAccount(accountChoiceBox.getValue());
     }
 
     private void validateAmount() {
@@ -123,26 +116,13 @@ public class TransactionEditController {
         return dateOK && descriptionOK && amountOK && typeOK && accountOK;
     }
 
-
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
-    }
-
-    public Transaction getTransaction() {
-        return transaction;
-    }
-
-    public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
+    public void setItem(Transaction transaction) {
+        this.item = transaction;
         this.amount = transaction.getAmount();
         datePicker.setValue(transaction.getDate());
         descriptionField.setText(transaction.getDescription());
         amountField.setText(MoneyStringConverter.formatMoney(transaction.getAmount()));
         typeChoiceBox.getSelectionModel().select(transaction.getBudgetType());
         accountChoiceBox.getSelectionModel().select(transaction.getAccount());
-    }
-
-    public boolean isOkPressed() {
-        return okPressed;
     }
 }

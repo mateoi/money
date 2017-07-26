@@ -8,13 +8,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
 import org.javamoney.moneta.Money;
 
 /**
  * Created by mateo on 26/07/2017.
  */
-public class AccountEditController {
+public class AccountEditController extends EditDialogController<Account> {
     @FXML
     private TextField nameField;
 
@@ -24,15 +23,9 @@ public class AccountEditController {
     @FXML
     private TextField interestField;
 
-    private Stage dialogStage;
-
-    private Account account;
-
     private Money startingAmount;
 
     private float interest;
-
-    private boolean okPressed = false;
 
     @FXML
     private void initialize() {
@@ -70,9 +63,9 @@ public class AccountEditController {
     @FXML
     private void onOK() {
         if (validateFields()) {
-            okPressed = true;
+            setOkPressed(true);
             commitAccount();
-            dialogStage.close();
+            super.getDialogStage().close();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill in all fields", ButtonType.OK);
             alert.showAndWait();
@@ -81,7 +74,7 @@ public class AccountEditController {
 
     @FXML
     private void onCancel() {
-        dialogStage.close();
+        super.getDialogStage().close();
     }
 
     private void validateAmount() {
@@ -105,25 +98,13 @@ public class AccountEditController {
     }
 
     private void commitAccount() {
-        account.setName(nameField.getText());
-        account.setStartingAmount(startingAmount);
-        account.setAnnualInterest(interest);
+        item.setName(nameField.getText());
+        item.setStartingAmount(startingAmount);
+        item.setAnnualInterest(interest);
     }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public boolean isOkPressed() {
-        return okPressed;
-    }
-
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
+    
+    public void setItem(Account account) {
+        this.item = account;
         this.startingAmount = account.getStartingAmount();
         this.interest = account.getAnnualInterest();
         nameField.setText(account.getName());

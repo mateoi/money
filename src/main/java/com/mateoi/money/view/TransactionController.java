@@ -2,26 +2,21 @@ package com.mateoi.money.view;
 
 import com.mateoi.money.model.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
 import javax.money.Monetary;
-import java.io.IOException;
 import java.time.LocalDate;
 
 /**
  * Created by mateo on 30/06/2017.
  */
-public class TransactionController extends SubNode {
+public class TransactionController extends TabController<Transaction> {
     @FXML
     private TableView<Transaction> table;
 
@@ -114,7 +109,7 @@ public class TransactionController extends SubNode {
     private void onEditTransaction() {
         Transaction transaction = table.getSelectionModel().getSelectedItem();
         if (transaction != null) {
-            editTransaction(transaction, true);
+            super.editItem(transaction, "/TransactionEditDialog.fxml", true);
         }
     }
 
@@ -132,37 +127,11 @@ public class TransactionController extends SubNode {
     @FXML
     private void onAddTransaction() {
         int newId = MainState.getInstance().getLastTransaction() + 1;
-        Transaction newTransaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Monetary.getCurrency("USD")), null, null);
-        Transaction result = editTransaction(newTransaction, false);
+        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Monetary.getCurrency("USD")), null, null);
+        Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
         if (result != null) {
             MainState.getInstance().setLastTransaction(newId);
             MainState.getInstance().getTransactions().add(result);
         }
     }
-
-    private Transaction editTransaction(Transaction transaction, boolean edit) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/TransactionEditDialog.fxml"));
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle((edit ? "Edit" : "Create New") + " Transaction");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(super.getPrimaryStage());
-            Scene scene = new Scene(loader.load());
-            dialogStage.setScene(scene);
-            TransactionEditController controller = loader.getController();
-            controller.setTransaction(transaction);
-            controller.setDialogStage(dialogStage);
-
-            dialogStage.showAndWait();
-
-            if (controller.isOkPressed()) {
-                return controller.getTransaction();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 }

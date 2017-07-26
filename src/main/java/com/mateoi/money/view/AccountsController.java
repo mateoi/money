@@ -6,26 +6,21 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
 import javax.money.Monetary;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 
 /**
  * Created by mateo on 30/06/2017.
  */
-public class AccountsController extends SubNode {
+public class AccountsController extends TabController<Account> {
     @FXML
     private TableView<Account> mainTable;
 
@@ -108,7 +103,7 @@ public class AccountsController extends SubNode {
     private void onEditAccount() {
         Account account = mainTable.getSelectionModel().getSelectedItem();
         if (account != null) {
-            editAccount(account, true);
+            super.editItem(account, "/AccountEditDialog.fxml", true);
         }
     }
 
@@ -116,7 +111,7 @@ public class AccountsController extends SubNode {
     private void onAddAccount() {
         int newId = MainState.getInstance().getLastAccount() + 1;
         Account account = new Account(newId, "", Money.zero(Monetary.getCurrency("USD")), 0);
-        Account result = editAccount(account, false);
+        Account result = super.editItem(account, "/AccountEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getAccounts().add(result);
             MainState.getInstance().setLastAccount(newId);
@@ -142,31 +137,6 @@ public class AccountsController extends SubNode {
                 MainState.getInstance().getAccounts().remove(account);
             }
         }
-
-    }
-
-    private Account editAccount(Account account, boolean edit) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/AccountEditDialog.fxml"));
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle((edit ? "Edit" : "Create New") + " Account");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(super.getPrimaryStage());
-            Scene scene = new Scene(loader.load());
-            dialogStage.setScene(scene);
-            AccountEditController controller = loader.getController();
-            controller.setAccount(account);
-            controller.setDialogStage(dialogStage);
-            dialogStage.showAndWait();
-
-            if (controller.isOkPressed()) {
-                return controller.getAccount();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void initializeMainTable() {

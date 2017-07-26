@@ -7,14 +7,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
 /**
  * Created by mateo on 26/07/2017.
  */
-public class SavingsEditController {
+public class SavingsEditController extends EditDialogController<SavingsItem> {
     @FXML
     private TextField nameField;
 
@@ -30,17 +29,11 @@ public class SavingsEditController {
     @FXML
     private TextField allocationField;
 
-    private Stage dialogStage;
-
-    private SavingsItem savingsItem;
-
     private Money goal;
 
     private Money currentAmount;
 
     private float allocation;
-
-    private boolean okPressed = false;
 
     @FXML
     private void initialize() {
@@ -107,9 +100,9 @@ public class SavingsEditController {
     @FXML
     private void onOK() {
         if (validateFields()) {
-            okPressed = true;
+            setOkPressed(true);
             commitSavingsItem();
-            dialogStage.close();
+            getDialogStage().close();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill in all fields", ButtonType.OK);
             alert.showAndWait();
@@ -118,15 +111,15 @@ public class SavingsEditController {
 
     @FXML
     private void onCancel() {
-        dialogStage.close();
+        getDialogStage().close();
     }
 
     private void commitSavingsItem() {
-        savingsItem.setName(nameField.getText());
-        savingsItem.setGoal(goal);
-        savingsItem.setCurrentAmount(currentAmount);
-        savingsItem.setAccount(accountChoiceBox.getValue());
-        savingsItem.setAllocation(allocation);
+        item.setName(nameField.getText());
+        item.setGoal(goal);
+        item.setCurrentAmount(currentAmount);
+        item.setAccount(accountChoiceBox.getValue());
+        item.setAllocation(allocation);
     }
 
 
@@ -153,21 +146,8 @@ public class SavingsEditController {
         this.allocation = newAllocation;
     }
 
-
-    public SavingsItem getSavingsItem() {
-        return savingsItem;
-    }
-
-    public boolean isOkPressed() {
-        return okPressed;
-    }
-
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
-    }
-
-    public void setSavingsItem(SavingsItem savingsItem) {
-        this.savingsItem = savingsItem;
+    public void setItem(SavingsItem savingsItem) {
+        this.item = savingsItem;
         this.goal = savingsItem.getGoal();
         this.currentAmount = savingsItem.getCurrentAmount();
         this.allocation = savingsItem.getAllocation();

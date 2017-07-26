@@ -2,27 +2,23 @@ package com.mateoi.money.view;
 
 import com.mateoi.money.model.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
 import javax.money.Monetary;
-import java.io.IOException;
 import java.util.Optional;
 
 /**
  * Created by mateo on 30/06/2017.
  */
-public class SavingsController extends SubNode {
+public class SavingsController extends TabController<SavingsItem> {
 
     @FXML
     private TableView<SavingsItem> table;
@@ -49,7 +45,16 @@ public class SavingsController extends SubNode {
     @FXML
     private void initialize() {
         table.setItems(MainState.getInstance().getSavingsItems());
-
+        table.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.E) {
+                onEditSavingsItem();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                table.getSelectionModel().select(null);
+            } else if (event.getCode() == KeyCode.DELETE) {
+                onRemoveSavingsItem();
+            }
+        });
+        
         descriptionColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         goalColumn.setCellValueFactory(param -> param.getValue().goalProperty());
         amountColumn.setCellValueFactory(param -> param.getValue().currentAmountProperty());
@@ -86,7 +91,7 @@ public class SavingsController extends SubNode {
     private void onEditSavingsItem() {
         SavingsItem savingsItem = table.getSelectionModel().getSelectedItem();
         if (savingsItem != null) {
-            editSavingsItem(savingsItem, true);
+            super.editItem(savingsItem, "/SavingsEditDialog.fxml", true);
         }
     }
 
@@ -94,7 +99,7 @@ public class SavingsController extends SubNode {
     private void onAddSavingsItem() {
         int newId = MainState.getInstance().getLastSavings() + 1;
         SavingsItem savingsItem = new SavingsItem(newId, "", Money.zero(Monetary.getCurrency("USD")), Money.zero(Monetary.getCurrency("USD")), null, 0);
-        SavingsItem result = editSavingsItem(savingsItem, false);
+        SavingsItem result = super.editItem(savingsItem, "/SavingsEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getSavingsItems().add(result);
             MainState.getInstance().setLastSavings(newId);
@@ -114,29 +119,5 @@ public class SavingsController extends SubNode {
         }
     }
 
-    private SavingsItem editSavingsItem(SavingsItem savingsItem, boolean edit) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/SavingsEditDialog.fxml"));
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle((edit ? "Edit" : "Create New") + " Savings goal");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(super.getPrimaryStage());
-            Scene scene = new Scene(loader.load());
-            dialogStage.setScene(scene);
-            SavingsEditController controller = loader.getController();
-            controller.setSavingsItem(savingsItem);
-            controller.setDialogStage(dialogStage);
-            dialogStage.showAndWait();
-
-            if (controller.isOkPressed()) {
-                return controller.getSavingsItem();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 }
