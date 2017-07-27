@@ -48,8 +48,10 @@ public class FileIO {
     }
 
     public void load(Path path) throws IOException {
-        List<String> lines = Files.readAllLines(path);
-        MainStateParser.getInstance().parseIntoMainState(lines);
+        if (path != null) {
+            List<String> lines = Files.readAllLines(path);
+            MainStateParser.getInstance().parseIntoMainState(lines);
+        }
     }
 
     public void loadSettings(String location) throws IOException {

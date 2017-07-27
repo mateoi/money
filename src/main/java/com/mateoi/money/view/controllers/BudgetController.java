@@ -4,6 +4,7 @@ import com.mateoi.money.model.*;
 import com.mateoi.money.view.DatePickerTableCell;
 import com.mateoi.money.view.InOutTableCell;
 import com.mateoi.money.view.MoneyTableCell;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -129,7 +130,13 @@ public class BudgetController extends TabController<BudgetItem> {
     }
 
     private void initializeTxTable() {
-        table.getSelectionModel().selectedItemProperty().addListener((a, b, newValue) -> txTable.setItems(newValue.getTransactions()));
+        table.getSelectionModel().selectedItemProperty().addListener((a, b, newValue) -> {
+            if (newValue != null) {
+                txTable.setItems(newValue.getTransactions());
+            } else {
+                txTable.setItems(FXCollections.emptyObservableList());
+            }
+        });
         txDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         txDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
         txAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());

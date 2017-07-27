@@ -161,9 +161,10 @@ public class Account {
     }
 
     public Color colorAccount() {
-        if (currentBalance.get().isGreaterThan(warningAmount.get())) {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(currentBalance.get().getCurrency());
+        if (currentBalance.get().isGreaterThan(warningAmount.get().with(conversion))) {
             return Color.GREEN;
-        } else if (currentBalance.get().isLessThan(warningAmount.get())) {
+        } else if (currentBalance.get().isLessThan(warningAmount.get().with(conversion))) {
             return Color.RED;
         } else {
             return Color.BLACK;

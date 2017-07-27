@@ -25,7 +25,7 @@ public class SettingsParser {
     }
 
     public void parseIntoSettings(List<String> lines) {
-        Path currentFile = cleanLines(lines, FilePrefixes.SETTINGS_FILE_PREFIX).map(Paths::get).findFirst().orElse(null);
+        Path currentFile = cleanLines(lines, FilePrefixes.SETTINGS_FILE_PREFIX).filter(s -> !s.equals("null")).map(Paths::get).findFirst().orElse(null);
         List<Path> recentFiles = cleanLines(lines, FilePrefixes.SETTINGS_RECENT_FILE_PREFIX).map(Paths::get).collect(Collectors.toList());
         CurrencyUnit currency = cleanLines(lines, FilePrefixes.SETTINGS_DEFAULT_CURRENCY_PREFIX).map(Monetary::getCurrency).findFirst().orElse(Monetary.getCurrency("USD"));
         boolean color = cleanLines(lines, FilePrefixes.SETTINGS_COLOR_PREFIX).map(Boolean::parseBoolean).findFirst().orElse(false);

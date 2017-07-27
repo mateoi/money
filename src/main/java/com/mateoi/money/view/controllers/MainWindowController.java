@@ -1,5 +1,6 @@
 package com.mateoi.money.view.controllers;
 
+import com.mateoi.money.Main;
 import com.mateoi.money.io.FileIO;
 import com.mateoi.money.model.Accounts;
 import com.mateoi.money.model.MainState;
@@ -61,7 +62,6 @@ public class MainWindowController {
 
     @FXML
     private void initialize() {
-        accountOverviewLabel.textProperty().bind(Accounts.getInstance().overviewProperty());
         openRecentMenu.getItems().addAll(createRecentMenuItems(Settings.getInstance().getRecentFiles()));
         Settings.getInstance().getRecentFiles().addListener((ListChangeListener<? super Path>) c ->
                 openRecentMenu.getItems().setAll(createRecentMenuItems(Settings.getInstance().getRecentFiles())));
@@ -177,6 +177,7 @@ public class MainWindowController {
             dialogStage.setScene(scene);
             SettingsController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+            dialogStage.getIcons().add(Main.APPLICATION_ICON);
             dialogStage.showAndWait();
         } catch (IOException e) {
             showError("Could not open settings");
@@ -309,5 +310,6 @@ public class MainWindowController {
         this.primaryStage = primaryStage;
         primaryStage.setOnCloseRequest(this::closeWindow);
         primaryStage.titleProperty().bind(windowTitleBinding);
+        accountOverviewLabel.textProperty().bind(Accounts.getInstance().overviewProperty());
     }
 }

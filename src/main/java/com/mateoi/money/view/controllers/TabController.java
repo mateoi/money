@@ -1,5 +1,6 @@
 package com.mateoi.money.view.controllers;
 
+import com.mateoi.money.Main;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -30,6 +31,7 @@ abstract class TabController<T> {
             EditDialogController<T> controller = loader.getController();
             controller.setItem(item);
             controller.setDialogStage(dialogStage);
+            dialogStage.getIcons().add(Main.APPLICATION_ICON);
             dialogStage.showAndWait();
 
             if (controller.isOkPressed()) {

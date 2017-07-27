@@ -10,9 +10,12 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
 import java.io.IOException;
 
 public class Main extends Application {
+    public static Image APPLICATION_ICON = new Image(Main.class.getResourceAsStream("/Icons/icons8-Money Box-96.png"));
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -29,12 +32,14 @@ public class Main extends Application {
         MainWindowController controller = loader.getController();
         controller.populateTabs();
         controller.setPrimaryStage(primaryStage);
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Icons/icons8-Money Box-96.png")));
+        primaryStage.getIcons().add(APPLICATION_ICON);
         primaryStage.show();
     }
 
 
     public static void main(String[] args) {
+        // Force loading of currency conversions
+        CurrencyConversion conversion = MonetaryConversions.getConversion("USD");
         launch(args);
     }
 }

@@ -1,5 +1,6 @@
 package com.mateoi.money.view;
 
+import com.mateoi.money.model.Settings;
 import javafx.scene.control.TableCell;
 import javafx.scene.input.MouseEvent;
 
@@ -24,10 +25,24 @@ public class InOutTableCell<S> extends TableCell<S, Boolean> {
         super.updateItem(item, empty);
         if (empty || item == null) {
             setText(null);
+            setStyle("");
         } else if (item) {
+            getTableView().refresh();
             setText("In");
+            if (Settings.getInstance().isColorCode()) {
+                setStyle("-fx-background-color: lightgreen;");
+            } else {
+                setStyle("");
+            }
         } else {
+            getTableView().refresh();
             setText("Out");
+            if (Settings.getInstance().isColorCode()) {
+                setStyle("-fx-background-color: lightpink;");
+            } else {
+                setStyle("");
+            }
+
         }
     }
 }
