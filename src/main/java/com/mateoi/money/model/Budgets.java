@@ -7,14 +7,12 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.javamoney.moneta.Money;
 
-import javax.money.Monetary;
-
 /**
  * Created by mateo on 20/07/2017.
  */
 public class Budgets {
 
-    private static final Money ZERO = Money.zero(Monetary.getCurrency("USD"));
+    private static final Money ZERO = Money.zero(Settings.getInstance().getDefaultCurrency());
 
     private final static Budgets instance = new Budgets();
 

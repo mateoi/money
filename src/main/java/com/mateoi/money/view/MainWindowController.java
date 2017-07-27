@@ -10,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -166,8 +167,20 @@ public class MainWindowController {
     }
 
     @FXML
-    private void onPreferences() {
-
+    private void onSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/SettingsDialog.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Settings");
+            Scene scene = new Scene(loader.load());
+            dialogStage.setScene(scene);
+            SettingsController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            showError("Could not open settings");
+        }
     }
 
     private MenuItem createMenuItem(Path path) {

@@ -1,6 +1,5 @@
 package com.mateoi.money.model;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,7 +9,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.javamoney.moneta.Money;
 
-import javax.money.Monetary;
+import javax.money.CurrencyUnit;
 import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
 
@@ -43,7 +42,12 @@ public class Accounts {
                 totalMoney.set(calculateTotalMoney());
             }
         });
-        overview.bind(Bindings.createStringBinding(this::createOverview, totalMoney));
+        Settings.getInstance().defaultCurrencyProperty().addListener((a, b, c) -> {
+            totalMoney.set(calculateTotalMoney());
+            overview.set(createOverview());
+        });
+        totalMoney.addListener((a, b, c) -> overview.set(createOverview()));
+        overview.set(createOverview());
     }
 
     private String createOverview() {
@@ -51,8 +55,9 @@ public class Accounts {
     }
 
     private Money calculateTotalMoney() {
-        Money zero = Money.zero(Monetary.getCurrency("USD"));
-        CurrencyConversion conversion = MonetaryConversions.getConversion(Monetary.getCurrency("USD"));
+        CurrencyUnit currencyUnit = Settings.getInstance().getDefaultCurrency();
+        Money zero = Money.zero(currencyUnit);
+        CurrencyConversion conversion = MonetaryConversions.getConversion(currencyUnit);
         return MainState.getInstance().getAccounts().stream().
                 map(Account::getCurrentBalance).
                 map(m -> m.with(conversion)).

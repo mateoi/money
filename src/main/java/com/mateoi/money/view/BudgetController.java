@@ -10,7 +10,6 @@ import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
-import javax.money.Monetary;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -86,7 +85,7 @@ public class BudgetController extends TabController<BudgetItem> {
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastBudget() + 1;
-        BudgetItem budgetItem = new BudgetItem(newId, false, "", Money.zero(Monetary.getCurrency("USD")), false);
+        BudgetItem budgetItem = new BudgetItem(newId, false, "", Money.zero(Settings.getInstance().getDefaultCurrency()), false);
         BudgetItem result = super.editItem(budgetItem, "/BudgetEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getBudgetItems().add(result);

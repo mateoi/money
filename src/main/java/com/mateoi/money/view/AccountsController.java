@@ -13,7 +13,6 @@ import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
-import javax.money.Monetary;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -110,7 +109,7 @@ public class AccountsController extends TabController<Account> {
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastAccount() + 1;
-        Account account = new Account(newId, "", Money.zero(Monetary.getCurrency("USD")), 0);
+        Account account = new Account(newId, "", Money.zero(Settings.getInstance().getDefaultCurrency()), 0);
         Account result = super.editItem(account, "/AccountEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getAccounts().add(result);

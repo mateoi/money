@@ -10,7 +10,6 @@ import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
-import javax.money.Monetary;
 import java.time.LocalDate;
 
 /**
@@ -124,7 +123,7 @@ public class TransactionController extends TabController<Transaction> {
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastTransaction() + 1;
-        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Monetary.getCurrency("USD")), null, null);
+        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Settings.getInstance().getDefaultCurrency()), null, null);
         Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
         if (result != null) {
             MainState.getInstance().setLastTransaction(newId);

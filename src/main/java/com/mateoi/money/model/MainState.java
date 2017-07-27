@@ -26,9 +26,9 @@ public class MainState {
 
     private ObservableList<SavingsItem> savingsItems = FXCollections.observableArrayList();
 
-    public static final Account UNKNOWN_ACCOUNT = new Account(-1, "Unknown", Money.of(0, "USD"), 0f);
+    public static final Account UNKNOWN_ACCOUNT = new Account(-1, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), 0f);
 
-    public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.of(0, "USD"), false);
+    public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), false);
 
     private IntegerProperty lastTransaction = new SimpleIntegerProperty(0);
 

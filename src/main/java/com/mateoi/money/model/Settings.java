@@ -9,6 +9,7 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 
 /**
  * Created by mateo on 26/07/2017.
@@ -35,6 +36,7 @@ public class Settings {
     }
 
     private Settings() {
+        allCurrencies.sort(Comparator.comparing(Object::toString));
         maxRecentFiles.addListener((a, oldValue, newValue) -> {
             if (newValue.intValue() <= 0) {
                 maxRecentFiles.set(oldValue.intValue());

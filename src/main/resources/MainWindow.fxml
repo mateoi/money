@@ -57,7 +57,7 @@
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#onPreferences" text="Preferences" />
+                        <MenuItem mnemonicParsing="false" onAction="#onSettings" text="Settings" />
                     </items>
                <accelerator>
                   <KeyCodeCombination alt="DOWN" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />

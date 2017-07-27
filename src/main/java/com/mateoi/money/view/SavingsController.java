@@ -12,7 +12,6 @@ import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
-import javax.money.Monetary;
 import java.util.Optional;
 
 /**
@@ -96,7 +95,9 @@ public class SavingsController extends TabController<SavingsItem> {
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastSavings() + 1;
-        SavingsItem savingsItem = new SavingsItem(newId, "", Money.zero(Monetary.getCurrency("USD")), Money.zero(Monetary.getCurrency("USD")), null, 0);
+        SavingsItem savingsItem = new SavingsItem(newId, "",
+                Money.zero(Settings.getInstance().getDefaultCurrency()),
+                Money.zero(Settings.getInstance().getDefaultCurrency()), null, 0);
         SavingsItem result = super.editItem(savingsItem, "/SavingsEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getSavingsItems().add(result);
