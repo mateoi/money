@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class Main extends Application {
         MainWindowController controller = loader.getController();
         controller.populateTabs();
         controller.setPrimaryStage(primaryStage);
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Icons/icons8-Money Box-96.png")));
         primaryStage.show();
     }
 
