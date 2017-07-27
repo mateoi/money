@@ -62,6 +62,26 @@ public class MainWindowController {
 
     @FXML
     private void onNew() {
+        if (MainState.getInstance().isModified()) {
+            ButtonType discard = new ButtonType("Discard");
+            ButtonType save = new ButtonType("Save");
+            Alert prompt = new Alert(Alert.AlertType.CONFIRMATION,
+                    "There are unsaved changes. Do you really want to discard them and create a new file?",
+                    discard, save, ButtonType.CANCEL);
+            prompt.setTitle("Discard Changes?");
+            ButtonType result = prompt.showAndWait().orElse(ButtonType.CANCEL);
+            if (result.equals(discard)) {
+                Settings.getInstance().setCurrentFile(null);
+                MainState.getInstance().clearAll();
+            } else if (result.equals(save)) {
+                onSave();
+                Settings.getInstance().setCurrentFile(null);
+                MainState.getInstance().clearAll();
+            }
+        } else {
+            Settings.getInstance().setCurrentFile(null);
+            MainState.getInstance().clearAll();
+        }
 
     }
 
@@ -155,7 +175,9 @@ public class MainWindowController {
         if (MainState.getInstance().isModified()) {
             ButtonType quit = new ButtonType("Quit");
             ButtonType save = new ButtonType("Save");
-            Alert prompt = new Alert(Alert.AlertType.CONFIRMATION, "There are unsaved changes. Do you really want to quit?", quit, save, ButtonType.CANCEL);
+            Alert prompt = new Alert(Alert.AlertType.CONFIRMATION,
+                    "There are unsaved changes. Do you really want to quit?", quit, save, ButtonType.CANCEL);
+            prompt.setTitle("Save before exit?");
             ButtonType result = prompt.showAndWait().orElse(ButtonType.CANCEL);
             if (result.equals(ButtonType.CANCEL)) {
                 event.consume();
