@@ -1,9 +1,7 @@
 package com.mateoi.money.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
@@ -26,13 +24,22 @@ public class Transaction {
 
     private ObjectProperty<Account> account = new SimpleObjectProperty<>();
 
-    public Transaction(int id, LocalDate date, String description, Money amount, BudgetItem budgetType, Account account) {
+    private BooleanProperty included = new SimpleBooleanProperty();
+
+    private ChangeListener<Boolean> includedListener = (a, b, c) -> {
+        if (budgetType.get() != null) {
+            budgetType.get().processTransactions();
+        }
+    };
+
+    public Transaction(int id, LocalDate date, String description, Money amount, BudgetItem budgetType, Account account, boolean included) {
         this.transactionId = id;
         this.date.setValue(date);
         this.description.setValue(description);
         this.amount.setValue(amount);
         this.budgetType.setValue(budgetType);
         this.account.setValue(account);
+        this.included.set(included);
 
         this.amount.addListener((observable, oldValue, newValue) -> {
             if (this.account.get() != null) {
@@ -63,6 +70,8 @@ public class Transaction {
         }));
         this.date.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.description.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.included.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.included.addListener(includedListener);
     }
 
     public boolean equals(Object o) {
@@ -74,7 +83,8 @@ public class Transaction {
             boolean budgets = this.budgetType.get().equals(t.getBudgetType());
             boolean amounts = this.amount.get().equals(t.getAmount());
             boolean accounts = this.account.get().equals(t.getAccount());
-            return ids && dates && descriptions && budgets && amounts && accounts;
+            boolean flushes = isIncluded() == t.isIncluded();
+            return ids && dates && descriptions && budgets && amounts && accounts && flushes;
         } else {
             return false;
         }
@@ -91,7 +101,9 @@ public class Transaction {
                 ";" +
                 budgetType.get().getItemId() +
                 ";" +
-                account.get().getAccountId();
+                account.get().getAccountId() +
+                ";" +
+                included.get();
     }
 
     public Color colorTransaction() {
@@ -171,5 +183,23 @@ public class Transaction {
 
     public int getTransactionId() {
         return transactionId;
+    }
+
+    public boolean isIncluded() {
+        return included.get();
+    }
+
+    public BooleanProperty includedProperty() {
+        return included;
+    }
+
+    public void setIncluded(boolean included) {
+        this.included.set(included);
+    }
+
+    public void silentExclude() {
+        this.included.removeListener(includedListener);
+        this.included.set(false);
+        this.included.addListener(includedListener);
     }
 }

@@ -87,10 +87,12 @@ public class BudgetItem {
                 essential.get();
     }
 
-    protected void processTransactions() {
+    public void processTransactions() {
         this.remaining.set(amount.get());
         for (Transaction transaction : transactions) {
-            processTransaction(transaction);
+            if (transaction.isIncluded()) {
+                processTransaction(transaction);
+            }
         }
     }
 

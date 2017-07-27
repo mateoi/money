@@ -70,6 +70,9 @@ public class BudgetController extends TabController<BudgetItem> {
     @FXML
     private TableColumn<Transaction, Account> txAccountColumn;
 
+    @FXML
+    private TableColumn<Transaction, Boolean> txIncludedColumn;
+
 
     @FXML
     private void initialize() {
@@ -97,7 +100,7 @@ public class BudgetController extends TabController<BudgetItem> {
         BudgetItem result = super.editItem(budgetItem, "/BudgetEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getBudgetItems().add(result);
-            MainState.getInstance().setLastAccount(newId);
+            MainState.getInstance().setLastBudget(newId);
             MainState.getInstance().setModified(true);
         }
     }
@@ -126,7 +129,19 @@ public class BudgetController extends TabController<BudgetItem> {
 
     @FXML
     private void onFlush() {
-
+        BudgetItem budgetItem = table.getSelectionModel().getSelectedItem();
+        if (budgetItem == null) {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to flush all budgets?", ButtonType.YES, ButtonType.NO);
+            confirmation.setTitle("Flush all budgets?");
+            ButtonType result = confirmation.showAndWait().orElse(ButtonType.NO);
+            if (result.equals(ButtonType.YES)) {
+                MainState.getInstance().getTransactions().forEach(Transaction::silentExclude);
+                MainState.getInstance().getBudgetItems().forEach(BudgetItem::processTransactions);
+            }
+        } else {
+            budgetItem.getTransactions().forEach(Transaction::silentExclude);
+            budgetItem.processTransactions();
+        }
     }
 
     private void initializeTxTable() {
@@ -141,6 +156,7 @@ public class BudgetController extends TabController<BudgetItem> {
         txDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
         txAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
         txAccountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
+        txIncludedColumn.setCellValueFactory(param -> param.getValue().includedProperty());
 
         txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
         txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -163,6 +179,7 @@ public class BudgetController extends TabController<BudgetItem> {
             });
             return cell;
         });
+        txIncludedColumn.setCellFactory(c -> new CheckBoxTableCell<>());
     }
 
     private void initializeLabels() {

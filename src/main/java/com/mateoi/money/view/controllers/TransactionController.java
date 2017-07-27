@@ -126,7 +126,7 @@ public class TransactionController extends TabController<Transaction> {
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastTransaction() + 1;
-        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Settings.getInstance().getDefaultCurrency()), null, null);
+        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Settings.getInstance().getDefaultCurrency()), null, null, true);
         Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
         if (result != null) {
             MainState.getInstance().setLastTransaction(newId);

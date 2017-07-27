@@ -143,7 +143,7 @@ public class MainStateParser {
 
     private Transaction parseTransaction(String s, List<Account> accounts, List<BudgetItem> budgets) {
         String[] parts = s.trim().split(";");
-        if (parts.length == 6) {
+        if (parts.length == 7) {
             int id;
             try {
                 id = Integer.parseInt(parts[0]);
@@ -174,7 +174,8 @@ public class MainStateParser {
 
             Account account = getAccount(account_id, accounts);
             BudgetItem budgetItem = getBudgetItem(budget_id, budgets);
-            return new Transaction(id, date, description, amount, budgetItem, account);
+            boolean included = Boolean.parseBoolean(parts[6]);
+            return new Transaction(id, date, description, amount, budgetItem, account, included);
         }
         return null;
     }
