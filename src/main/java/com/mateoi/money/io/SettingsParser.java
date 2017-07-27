@@ -4,6 +4,7 @@ import com.mateoi.money.model.Settings;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -36,6 +37,14 @@ public class SettingsParser {
         settings.setDefaultCurrency(currency);
         settings.setColorCode(color);
         settings.setMaxRecentFiles(maxFiles);
+
+        if (currentFile != null) {
+            try {
+                FileIO.getInstance().load(currentFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Stream<String> cleanLines(List<String> lines, String prefix) {

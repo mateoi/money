@@ -1,6 +1,7 @@
 package com.mateoi.money;
 
 import com.mateoi.money.io.FileIO;
+import com.mateoi.money.model.Settings;
 import com.mateoi.money.view.MainWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,13 +9,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.nio.file.Paths;
+import java.io.IOException;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FileIO.getInstance().load(Paths.get(getClass().getResource("/ExampleFile.txt").toURI()));
+        try {
+            FileIO.getInstance().loadSettings(Settings.SETTINGS_LOCATION);
+        } catch (IOException ignored) {
+            // Settings not found, continue...
+        }
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/MainWindow.fxml"));
         Parent root = loader.load();

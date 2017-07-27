@@ -8,12 +8,15 @@ import javafx.collections.ObservableList;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by mateo on 26/07/2017.
  */
 public class Settings {
     private final static Settings ourInstance = new Settings();
+
+    public final static Path SETTINGS_LOCATION = Paths.get(System.getProperty("user.home"), ".money.cfg");
 
     private final ObjectProperty<Path> currentFile = new SimpleObjectProperty<>();
 

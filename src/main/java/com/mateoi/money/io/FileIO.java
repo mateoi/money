@@ -37,7 +37,7 @@ public class FileIO {
         saveSettings(path);
     }
 
-    private void saveSettings(Path path) throws IOException {
+    public void saveSettings(Path path) throws IOException {
         String lines = Settings.getInstance().toString();
         Files.write(path, lines.getBytes());
     }

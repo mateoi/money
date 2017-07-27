@@ -216,6 +216,11 @@ public class MainWindowController {
     }
 
     private void closeWindow(WindowEvent event) {
+        try {
+            FileIO.getInstance().saveSettings(Settings.SETTINGS_LOCATION);
+        } catch (IOException e) {
+            // Fail silently
+        }
         if (MainState.getInstance().isModified()) {
             ButtonType quit = new ButtonType("Quit");
             ButtonType save = new ButtonType("Save");
@@ -229,7 +234,6 @@ public class MainWindowController {
                 onSave();
             }
         }
-
     }
 
     private String createWindowTitle() {
