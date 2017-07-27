@@ -1,6 +1,8 @@
-package com.mateoi.money.view;
+package com.mateoi.money.view.controllers;
 
 import com.mateoi.money.model.*;
+import com.mateoi.money.view.DatePickerTableCell;
+import com.mateoi.money.view.MoneyTableCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -52,6 +54,7 @@ public class TransactionController extends TabController<Transaction> {
                 }
             }
         });
+        Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> table.refresh());
 
         dateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         descriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
@@ -59,7 +62,7 @@ public class TransactionController extends TabController<Transaction> {
         accountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
         typeColumn.setCellValueFactory(param -> param.getValue().budgetTypeProperty());
 
-        amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getAmount())));
+        amountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
         dateColumn.setCellFactory(c -> new DatePickerTableCell<>());
         descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         accountColumn.setCellFactory(c -> {

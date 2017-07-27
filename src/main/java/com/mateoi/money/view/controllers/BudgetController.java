@@ -1,6 +1,9 @@
-package com.mateoi.money.view;
+package com.mateoi.money.view.controllers;
 
 import com.mateoi.money.model.*;
+import com.mateoi.money.view.DatePickerTableCell;
+import com.mateoi.money.view.InOutTableCell;
+import com.mateoi.money.view.MoneyTableCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -72,6 +75,10 @@ public class BudgetController extends TabController<BudgetItem> {
         initializeMainTable();
         initializeLabels();
         initializeTxTable();
+        Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> {
+            table.refresh();
+            txTable.refresh();
+        });
     }
 
     @FXML
@@ -130,7 +137,7 @@ public class BudgetController extends TabController<BudgetItem> {
 
         txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
         txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        txAmountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> txTable.getSelectionModel().getSelectedItem().getAmount())));
+        txAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> txTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
         txAccountColumn.setCellFactory(c -> {
             ChoiceBoxTableCell<Transaction, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
             cell.setConverter(new StringConverter<Account>() {
@@ -185,17 +192,8 @@ public class BudgetController extends TabController<BudgetItem> {
         inColumn.setCellFactory(c -> new InOutTableCell<>());
         essentialColumn.setCellFactory(c -> new CheckBoxTableCell<>());
         amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getAmount())));
-        remainingColumn.setCellFactory(c -> new TableCell<BudgetItem, Money>() {
-            @Override
-            protected void updateItem(Money item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText(MoneyStringConverter.formatMoney(item));
-                }
-            }
-        });
+        remainingColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getRemaining(), BudgetItem::colorBudget));
+        remainingColumn.setEditable(false);
     }
 
 }

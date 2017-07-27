@@ -4,6 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
 import java.time.LocalDate;
@@ -91,6 +92,17 @@ public class Transaction {
                 budgetType.get().getItemId() +
                 ";" +
                 account.get().getAccountId();
+    }
+
+    public Color colorTransaction() {
+        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
+        if (amount.get().isGreaterThan(zero)) {
+            return Color.GREEN;
+        } else if (amount.get().isLessThan(zero)) {
+            return Color.RED;
+        } else {
+            return Color.BLACK;
+        }
     }
 
     public LocalDate getDate() {

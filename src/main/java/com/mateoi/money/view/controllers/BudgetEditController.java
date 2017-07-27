@@ -1,4 +1,4 @@
-package com.mateoi.money.view;
+package com.mateoi.money.view.controllers;
 
 import com.mateoi.money.model.BudgetItem;
 import com.mateoi.money.model.MoneyStringConverter;

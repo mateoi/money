@@ -1,6 +1,8 @@
-package com.mateoi.money.view;
+package com.mateoi.money.view.controllers;
 
 import com.mateoi.money.model.*;
+import com.mateoi.money.view.DatePickerTableCell;
+import com.mateoi.money.view.MoneyTableCell;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -96,6 +98,10 @@ public class AccountsController extends TabController<Account> {
             }
         });
         initializeTxTable();
+        Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> {
+            mainTable.refresh();
+            transactionTable.refresh();
+        });
     }
 
     @FXML
@@ -109,7 +115,7 @@ public class AccountsController extends TabController<Account> {
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastAccount() + 1;
-        Account account = new Account(newId, "", Money.zero(Settings.getInstance().getDefaultCurrency()), 0);
+        Account account = new Account(newId, "", Money.zero(Settings.getInstance().getDefaultCurrency()), Money.zero(Settings.getInstance().getDefaultCurrency()), 0);
         Account result = super.editItem(account, "/AccountEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().getAccounts().add(result);
@@ -156,7 +162,8 @@ public class AccountsController extends TabController<Account> {
         interestColumn.setCellValueFactory(param -> param.getValue().annualInterestProperty());
 
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> mainTable.getSelectionModel().getSelectedItem().getCurrentBalance())));
+        amountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> mainTable.getSelectionModel().getSelectedItem().getCurrentBalance(),
+                Account::colorAccount));
         interestColumn.setCellFactory(TextFieldTableCell.forTableColumn(new PercentageStringConverter(() -> mainTable.getSelectionModel().getSelectedItem().getAnnualInterest())));
     }
 
@@ -170,7 +177,7 @@ public class AccountsController extends TabController<Account> {
 
         txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
-        txAmountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> transactionTable.getSelectionModel().getSelectedItem().getAmount())));
+        txAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> transactionTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
         txTypeColumn.setCellFactory(c -> {
             ChoiceBoxTableCell<Transaction, BudgetItem> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getBudgetItems());
             cell.setConverter(new StringConverter<BudgetItem>() {

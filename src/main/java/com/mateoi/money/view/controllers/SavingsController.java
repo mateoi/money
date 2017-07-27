@@ -1,6 +1,7 @@
-package com.mateoi.money.view;
+package com.mateoi.money.view.controllers;
 
 import com.mateoi.money.model.*;
+import com.mateoi.money.view.MoneyTableCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -60,7 +61,7 @@ public class SavingsController extends TabController<SavingsItem> {
         allocationColumn.setCellValueFactory(param -> param.getValue().allocationProperty());
 
         goalColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getGoal())));
-        amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getCurrentAmount())));
+        amountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getCurrentAmount(), SavingsItem::colorSavings));
         descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         progressColumn.setCellFactory(TextFieldTableCell.forTableColumn(new PercentageStringConverter(() -> table.getSelectionModel().getSelectedItem().getProgress())));
         allocationColumn.setCellFactory(TextFieldTableCell.forTableColumn(new PercentageStringConverter(() -> table.getSelectionModel().getSelectedItem().getAllocation())));

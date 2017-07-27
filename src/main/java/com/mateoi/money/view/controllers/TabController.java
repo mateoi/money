@@ -1,4 +1,4 @@
-package com.mateoi.money.view;
+package com.mateoi.money.view.controllers;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

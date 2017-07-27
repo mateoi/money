@@ -2,7 +2,7 @@ package com.mateoi.money;
 
 import com.mateoi.money.io.FileIO;
 import com.mateoi.money.model.Settings;
-import com.mateoi.money.view.MainWindowController;
+import com.mateoi.money.view.controllers.MainWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -43,11 +44,14 @@ public class Account {
 
     private IntegerBinding txNumber = Bindings.size(transactions);
 
-    public Account(int id, String name, Money startingAmount, float interest, Transaction... transactions) {
+    private ObjectProperty<Money> warningAmount = new SimpleObjectProperty<>();
+
+    public Account(int id, String name, Money startingAmount, Money warningAmount, float interest, Transaction... transactions) {
         accountId = id;
         this.name.set(name);
         this.startingAmount.set(startingAmount);
         this.annualInterest.set(interest);
+        this.warningAmount.set(warningAmount);
 
         this.currentBalance.setValue(Money.of(startingAmount.getNumber(), startingAmount.getCurrency()));
         currentBalance.set(startingAmount);
@@ -89,7 +93,9 @@ public class Account {
                 ";" +
                 startingAmount.get().toString() +
                 ";" +
-                annualInterest.get();
+                annualInterest.get() +
+                ";" +
+                warningAmount.get();
     }
 
     protected void processTransactions() {
@@ -151,6 +157,16 @@ public class Account {
         }
         if (currentBalance.get().isLessThan(minimumBalance.get())) {
             minimumBalance.set(Money.of(currentBalance.get().getNumber(), currency));
+        }
+    }
+
+    public Color colorAccount() {
+        if (currentBalance.get().isGreaterThan(warningAmount.get())) {
+            return Color.GREEN;
+        } else if (currentBalance.get().isLessThan(warningAmount.get())) {
+            return Color.RED;
+        } else {
+            return Color.BLACK;
         }
     }
 
@@ -281,5 +297,17 @@ public class Account {
 
     public IntegerBinding txNumberProperty() {
         return txNumber;
+    }
+
+    public Money getWarningAmount() {
+        return warningAmount.get();
+    }
+
+    public ObjectProperty<Money> warningAmountProperty() {
+        return warningAmount;
+    }
+
+    public void setWarningAmount(Money warningAmount) {
+        this.warningAmount.set(warningAmount);
     }
 }

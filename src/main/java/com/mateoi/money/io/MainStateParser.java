@@ -64,7 +64,7 @@ public class MainStateParser {
      */
     private Account parseAccount(String s) {
         String[] parts = s.trim().split(";");
-        if (parts.length == 4) {
+        if (parts.length == 5) {
             int id;
             try {
                 id = Integer.parseInt(parts[0]);
@@ -79,7 +79,8 @@ public class MainStateParser {
             } catch (NumberFormatException n) {
                 return null;
             }
-            return new Account(id, name, starting, interest);
+            Money warning = Money.parse(parts[4]);
+            return new Account(id, name, starting, warning, interest);
         }
         return null;
     }

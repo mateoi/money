@@ -2,6 +2,7 @@ package com.mateoi.money.model;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
 import javax.money.convert.CurrencyConversion;
@@ -76,6 +77,14 @@ public class SavingsItem {
                 account.get().getAccountId() +
                 ";" +
                 allocation.get();
+    }
+
+    public Color colorSavings() {
+        if (currentAmount.get().isGreaterThanOrEqualTo(goal.get())) {
+            return Color.GREEN;
+        } else {
+            return Color.RED;
+        }
     }
 
     public String getName() {

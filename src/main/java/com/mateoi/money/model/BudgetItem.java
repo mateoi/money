@@ -4,6 +4,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -99,6 +100,18 @@ public class BudgetItem {
         Money balance = remaining.get();
         balance = balance.add(amount);
         remaining.set(balance);
+    }
+
+    public Color colorBudget() {
+        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
+        if (remaining.get().isGreaterThan(zero)) {
+            return Color.GREEN;
+        } else if (remaining.get().isLessThan(zero)) {
+            return Color.RED;
+        } else {
+            return Color.BLACK;
+        }
+
     }
 
     public boolean isIn() {
