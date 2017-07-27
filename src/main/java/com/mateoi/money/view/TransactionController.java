@@ -116,6 +116,7 @@ public class TransactionController extends TabController<Transaction> {
             MainState.getInstance().getTransactions().remove(transaction);
             transaction.getAccount().getTransactions().remove(transaction);
             transaction.getBudgetType().getTransactions().remove(transaction);
+            MainState.getInstance().setModified(true);
         }
 
     }
@@ -128,6 +129,7 @@ public class TransactionController extends TabController<Transaction> {
         if (result != null) {
             MainState.getInstance().setLastTransaction(newId);
             MainState.getInstance().getTransactions().add(result);
+            MainState.getInstance().setModified(true);
         }
     }
 }

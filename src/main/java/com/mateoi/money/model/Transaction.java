@@ -6,7 +6,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.javamoney.moneta.Money;
 
-import javax.money.CurrencyUnit;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -26,8 +25,6 @@ public class Transaction {
 
     private ObjectProperty<Account> account = new SimpleObjectProperty<>();
 
-    private CurrencyUnit currency;
-
     public Transaction(int id, LocalDate date, String description, Money amount, BudgetItem budgetType, Account account) {
         this.transactionId = id;
         this.date.setValue(date);
@@ -43,6 +40,7 @@ public class Transaction {
             if (this.budgetType.get() != null) {
                 this.budgetType.get().processTransactions();
             }
+            MainState.getInstance().setModified(true);
         });
         this.account.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
@@ -51,6 +49,7 @@ public class Transaction {
             if (newValue != null) {
                 newValue.getTransactions().add(Transaction.this);
             }
+            MainState.getInstance().setModified(true);
         });
         this.budgetType.addListener(((observable, oldValue, newValue) -> {
             if (oldValue != null) {
@@ -59,7 +58,10 @@ public class Transaction {
             if (newValue != null) {
                 newValue.getTransactions().add(Transaction.this);
             }
+            MainState.getInstance().setModified(true);
         }));
+        this.date.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.description.addListener((a, b, c) -> MainState.getInstance().setModified(true));
     }
 
     public boolean equals(Object o) {

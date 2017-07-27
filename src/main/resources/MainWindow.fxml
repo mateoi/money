@@ -33,11 +33,7 @@
                                 <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#onClose" text="Exit">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#onClose" text="Exit" />
                     </items>
                <accelerator>
                   <KeyCodeCombination alt="DOWN" code="F" control="UP" meta="UP" shift="UP" shortcut="UP" />

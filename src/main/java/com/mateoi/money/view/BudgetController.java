@@ -91,6 +91,7 @@ public class BudgetController extends TabController<BudgetItem> {
         if (result != null) {
             MainState.getInstance().getBudgetItems().add(result);
             MainState.getInstance().setLastAccount(newId);
+            MainState.getInstance().setModified(true);
         }
     }
 
@@ -111,6 +112,7 @@ public class BudgetController extends TabController<BudgetItem> {
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.orElse(ButtonType.CANCEL).equals(ButtonType.OK)) {
                 MainState.getInstance().getBudgetItems().remove(budgetItem);
+                MainState.getInstance().setModified(true);
             }
         }
     }

@@ -40,7 +40,10 @@ public class BudgetItem {
 
         this.currency = amount.getCurrency();
         this.remaining.setValue(Money.of(amount.getNumber(), currency));
-        this.amount.addListener((observable, oldValue, newValue) -> processTransactions());
+        this.amount.addListener((observable, oldValue, newValue) -> {
+            processTransactions();
+            MainState.getInstance().setModified(true);
+        });
         this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
             while (ch.next()) {
                 if (ch.getAddedSize() == 1 && ch.getRemovedSize() == 0) {
@@ -51,6 +54,9 @@ public class BudgetItem {
             }
         });
         this.transactions.addAll(transactions);
+        this.in.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.name.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.essential.addListener((a, b, c) -> MainState.getInstance().setModified(true));
 
     }
 

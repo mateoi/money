@@ -2,13 +2,17 @@ package com.mateoi.money.view;
 
 import com.mateoi.money.io.FileIO;
 import com.mateoi.money.model.Accounts;
+import com.mateoi.money.model.MainState;
 import com.mateoi.money.model.Settings;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,10 +51,13 @@ public class MainWindowController {
 
     private TransactionController transactionController;
 
+    private StringBinding windowTitleBinding = Bindings.createStringBinding(this::createWindowTitle,
+            Settings.getInstance().currentFileProperty(), MainState.getInstance().modifiedProperty());
+
+
     @FXML
     private void initialize() {
         accountOverviewLabel.textProperty().bind(Accounts.getInstance().overviewProperty());
-        primaryStage.setOnCloseRequest(event -> onClose());
     }
 
     @FXML
@@ -72,6 +79,7 @@ public class MainWindowController {
                 FileIO.getInstance().load(asPath);
                 Settings.getInstance().setCurrentFile(asPath);
                 Settings.getInstance().addRecentFile(asPath);
+                MainState.getInstance().setModified(false);
             } catch (IOException e) {
                 showError("Could not open file");
             }
@@ -87,6 +95,7 @@ public class MainWindowController {
         } else {
             try {
                 FileIO.getInstance().save(path);
+                MainState.getInstance().setModified(false);
             } catch (IOException e) {
                 showError("Could not save file");
             }
@@ -107,6 +116,7 @@ public class MainWindowController {
                 FileIO.getInstance().save(asPath);
                 Settings.getInstance().addRecentFile(asPath);
                 Settings.getInstance().setCurrentFile(asPath);
+                MainState.getInstance().setModified(false);
             } catch (IOException e) {
                 showError("Could not save file");
             }
@@ -115,7 +125,7 @@ public class MainWindowController {
 
     @FXML
     private void onClose() {
-
+        primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     @FXML
@@ -140,6 +150,37 @@ public class MainWindowController {
     private void onPreferences() {
 
     }
+
+    private void closeWindow(WindowEvent event) {
+        if (MainState.getInstance().isModified()) {
+            ButtonType quit = new ButtonType("Quit");
+            ButtonType save = new ButtonType("Save");
+            Alert prompt = new Alert(Alert.AlertType.CONFIRMATION, "There are unsaved changes. Do you really want to quit?", quit, save, ButtonType.CANCEL);
+            ButtonType result = prompt.showAndWait().orElse(ButtonType.CANCEL);
+            if (result.equals(ButtonType.CANCEL)) {
+                event.consume();
+            } else if (result.equals(save)) {
+                onSave();
+            }
+        }
+
+    }
+
+    private String createWindowTitle() {
+        String title = "MoneyApp - ";
+        Path file = Settings.getInstance().getCurrentFile();
+        if (file == null) {
+            title += "New File";
+        } else {
+            title += file.getFileName().toString();
+        }
+
+        if (MainState.getInstance().isModified()) {
+            title += "*";
+        }
+        return title;
+    }
+
 
     private void showError(String text) {
         Alert error = new Alert(Alert.AlertType.ERROR, text, ButtonType.OK);
@@ -183,5 +224,7 @@ public class MainWindowController {
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        primaryStage.setOnCloseRequest(this::closeWindow);
+        primaryStage.titleProperty().bind(windowTitleBinding);
     }
 }

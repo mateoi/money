@@ -115,6 +115,7 @@ public class AccountsController extends TabController<Account> {
         if (result != null) {
             MainState.getInstance().getAccounts().add(result);
             MainState.getInstance().setLastAccount(newId);
+            MainState.getInstance().setModified(true);
         }
     }
 
@@ -135,6 +136,7 @@ public class AccountsController extends TabController<Account> {
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.orElse(ButtonType.CANCEL).equals(ButtonType.OK)) {
                 MainState.getInstance().getAccounts().remove(account);
+                MainState.getInstance().setModified(true);
             }
         }
     }

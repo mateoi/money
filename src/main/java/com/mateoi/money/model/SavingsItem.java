@@ -36,6 +36,11 @@ public class SavingsItem {
         this.allocation.set(allocation);
 
         progress.bind(Bindings.createFloatBinding(this::calculateProgress, this.goal, this.currentAmount));
+
+        this.name.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.goal.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.currentAmount.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.account.addListener((a, b, c) -> MainState.getInstance().setModified(true));
     }
 
     private float calculateProgress() {

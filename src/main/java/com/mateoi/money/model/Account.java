@@ -26,7 +26,7 @@ public class Account {
     private FloatProperty annualInterest = new SimpleFloatProperty();
 
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
-    
+
     private ObjectProperty<Money> currentBalance = new SimpleObjectProperty<>();
 
     private ObjectProperty<Money> maximumBalance = new SimpleObjectProperty<>();
@@ -63,6 +63,10 @@ public class Account {
             }
         });
         this.transactions.addAll(transactions);
+
+        this.name.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.startingAmount.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        this.annualInterest.addListener((a, b, c) -> MainState.getInstance().setModified(true));
     }
 
     public boolean equals(Object o) {

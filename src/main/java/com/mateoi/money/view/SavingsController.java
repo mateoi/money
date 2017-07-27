@@ -101,6 +101,7 @@ public class SavingsController extends TabController<SavingsItem> {
         if (result != null) {
             MainState.getInstance().getSavingsItems().add(result);
             MainState.getInstance().setLastSavings(newId);
+            MainState.getInstance().setModified(true);
         }
     }
 
@@ -113,6 +114,7 @@ public class SavingsController extends TabController<SavingsItem> {
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.orElse(ButtonType.CANCEL).equals(ButtonType.OK)) {
                 MainState.getInstance().getSavingsItems().remove(savingsItem);
+                MainState.getInstance().setModified(true);
             }
         }
     }

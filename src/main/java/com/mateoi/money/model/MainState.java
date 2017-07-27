@@ -1,7 +1,9 @@
 package com.mateoi.money.model;
 
 import com.mateoi.money.io.FilePrefixes;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -35,6 +37,8 @@ public class MainState {
     private IntegerProperty lastSavings = new SimpleIntegerProperty(0);
 
     private IntegerProperty lastBudget = new SimpleIntegerProperty(0);
+
+    private BooleanProperty modified = new SimpleBooleanProperty(false);
 
     private MainState() {
         transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
@@ -121,6 +125,7 @@ public class MainState {
         this.lastAccount.set(accountCount);
         this.lastSavings.set(savingsCount);
         this.lastBudget.set(budgetCount);
+        modified.set(false);
     }
 
     public void clearAll() {
@@ -132,6 +137,7 @@ public class MainState {
         this.lastAccount.set(0);
         this.lastSavings.set(0);
         this.lastBudget.set(0);
+        modified.set(false);
     }
 
     private void removeBudgetItem(BudgetItem budgetItem) {
@@ -246,5 +252,17 @@ public class MainState {
 
     public void setLastBudget(int lastBudget) {
         this.lastBudget.set(lastBudget);
+    }
+
+    public boolean isModified() {
+        return modified.get();
+    }
+
+    public BooleanProperty modifiedProperty() {
+        return modified;
+    }
+
+    public void setModified(boolean modified) {
+        this.modified.set(modified);
     }
 }
