@@ -71,6 +71,7 @@ public class Settings {
     }
 
     public void addRecentFile(Path path) {
+        recentFiles.remove(path);
         recentFiles.add(path);
         if (recentFiles.size() > maxRecentFiles.get()) {
             recentFiles.remove(0, recentFiles.size() - maxRecentFiles.get());

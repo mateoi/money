@@ -6,6 +6,7 @@ import com.mateoi.money.model.MainState;
 import com.mateoi.money.model.Settings;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -17,6 +18,8 @@ import javafx.stage.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainWindowController {
 
@@ -58,6 +61,9 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         accountOverviewLabel.textProperty().bind(Accounts.getInstance().overviewProperty());
+        openRecentMenu.getItems().addAll(createRecentMenuItems(Settings.getInstance().getRecentFiles()));
+        Settings.getInstance().getRecentFiles().addListener((ListChangeListener<? super Path>) c ->
+                openRecentMenu.getItems().setAll(createRecentMenuItems(Settings.getInstance().getRecentFiles())));
     }
 
     @FXML
@@ -95,14 +101,7 @@ public class MainWindowController {
         File file = chooser.showOpenDialog(primaryStage);
         if (file != null) {
             Path asPath = file.toPath();
-            try {
-                FileIO.getInstance().load(asPath);
-                Settings.getInstance().setCurrentFile(asPath);
-                Settings.getInstance().addRecentFile(asPath);
-                MainState.getInstance().setModified(false);
-            } catch (IOException e) {
-                showError("Could not open file");
-            }
+            openFile(asPath);
         }
     }
 
@@ -169,6 +168,51 @@ public class MainWindowController {
     @FXML
     private void onPreferences() {
 
+    }
+
+    private MenuItem createMenuItem(Path path) {
+        MenuItem menuItem = new MenuItem(path.getFileName().toString());
+        menuItem.setOnAction(event -> {
+            if (MainState.getInstance().isModified()) {
+                ButtonType discard = new ButtonType("Discard");
+                ButtonType save = new ButtonType("Save");
+                Alert prompt = new Alert(Alert.AlertType.CONFIRMATION,
+                        "There are unsaved changes. Do you really want to discard them and create a new file?",
+                        discard, save, ButtonType.CANCEL);
+                prompt.setTitle("Discard Changes?");
+                ButtonType result = prompt.showAndWait().orElse(ButtonType.CANCEL);
+                if (result.equals(discard)) {
+                    openFile(path);
+                } else if (result.equals(save)) {
+                    onSave();
+                    openFile(path);
+                }
+            } else {
+                openFile(path);
+            }
+
+
+        });
+        return menuItem;
+    }
+
+    private List<MenuItem> createRecentMenuItems(List<Path> paths) {
+        List<MenuItem> menuItems = new ArrayList<>(paths.size());
+        for (int i = paths.size() - 1; i >= 0; i--) {
+            menuItems.add(createMenuItem(paths.get(i)));
+        }
+        return menuItems;
+    }
+
+    private void openFile(Path path) {
+        try {
+            Settings.getInstance().setCurrentFile(path);
+            Settings.getInstance().addRecentFile(path);
+            FileIO.getInstance().load(path);
+            MainState.getInstance().setModified(false);
+        } catch (IOException e) {
+            showError("Could not open file");
+        }
     }
 
     private void closeWindow(WindowEvent event) {
