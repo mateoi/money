@@ -7,12 +7,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.javamoney.moneta.Money;
 
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
+
 /**
  * Created by mateo on 20/07/2017.
  */
 public class Budgets {
-
-    private static final Money ZERO = Money.zero(Settings.getInstance().getDefaultCurrency());
 
     private final static Budgets instance = new Budgets();
 
@@ -57,33 +58,45 @@ public class Budgets {
     }
 
     private Money totalMoneyIn() {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(Settings.getInstance().getDefaultCurrency());
+        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
         return MainState.getInstance().getBudgetItems().stream().
                 filter(BudgetItem::isIn).
                 map(BudgetItem::getAmount).
-                reduce(ZERO, Money::add);
+                map(a -> a.with(conversion)).
+                reduce(zero, Money::add);
     }
 
     private Money totalMoneyOut() {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(Settings.getInstance().getDefaultCurrency());
+        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
         return MainState.getInstance().getBudgetItems().stream().
                 filter(b -> !b.isIn()).
                 map(BudgetItem::getAmount).
-                reduce(ZERO, Money::add);
+                map(a -> a.with(conversion)).
+                reduce(zero, Money::add);
     }
 
     private Money calculateEssentials() {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(Settings.getInstance().getDefaultCurrency());
+        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
         return MainState.getInstance().getBudgetItems().stream().
                 filter(BudgetItem::isEssential).
                 filter(b -> !b.isIn()).
                 map(BudgetItem::getAmount).
-                reduce(ZERO, Money::add);
+                map(a -> a.with(conversion)).
+                reduce(zero, Money::add);
     }
 
     private Money calculateExtras() {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(Settings.getInstance().getDefaultCurrency());
+        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
         return MainState.getInstance().getBudgetItems().stream().
                 filter(b -> !b.isEssential()).
                 filter(b -> !b.isIn()).
                 map(BudgetItem::getAmount).
-                reduce(ZERO, Money::add);
+                map(a -> a.with(conversion)).
+                reduce(zero, Money::add);
     }
 
     public Money getTotalIn() {

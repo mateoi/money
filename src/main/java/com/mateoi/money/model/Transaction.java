@@ -107,10 +107,9 @@ public class Transaction {
     }
 
     public Color colorTransaction() {
-        Money zero = Money.zero(amount.get().getCurrency());
-        if (amount.get().isGreaterThan(zero)) {
+        if (amount.get().isPositive()) {
             return Color.GREEN;
-        } else if (amount.get().isLessThan(zero)) {
+        } else if (amount.get().isNegative()) {
             return Color.RED;
         } else {
             return Color.BLACK;

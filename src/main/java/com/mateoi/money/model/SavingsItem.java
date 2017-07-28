@@ -24,8 +24,11 @@ public class SavingsItem {
 
     private ObjectProperty<Account> account = new SimpleObjectProperty<>();
 
-
     private FloatProperty allocation = new SimpleFloatProperty();
+
+    private ObjectProperty<Money> monthlyIncrease = new SimpleObjectProperty<>();
+
+    private ObjectProperty<Number> monthsToTarget = new SimpleObjectProperty<>();
 
 
     public SavingsItem(int id, String name, Money goal, Money currentAmount, Account account, float allocation) {
@@ -42,6 +45,27 @@ public class SavingsItem {
         this.goal.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.currentAmount.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.account.addListener((a, b, c) -> MainState.getInstance().setModified(true));
+        monthlyIncrease.bind(Bindings.createObjectBinding(this::calculateMonthlyIncrease, Budgets.getInstance().totalToSavingsProperty(), this.allocation));
+        monthsToTarget.bind(Bindings.createIntegerBinding(this::calculateMonthsToTarget, monthlyIncrease, this.goal, this.currentAmount));
+    }
+
+    private Money calculateMonthlyIncrease() {
+        Money toSavings = Budgets.getInstance().getTotalToSavings();
+        if (toSavings.isNegativeOrZero()) {
+            return Money.zero(toSavings.getCurrency());
+        } else {
+            return toSavings.multiply(getAllocation() / 100);
+        }
+    }
+
+    private int calculateMonthsToTarget() {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(goal.get().getCurrency());
+        Money remaining = goal.get().subtract(currentAmount.get().with(conversion));
+        if (remaining.isNegativeOrZero() || monthlyIncrease.get().isZero()) {
+            return 0;
+        } else {
+            return (int) Math.ceil(remaining.divide(monthlyIncrease.get().with(conversion).getNumber()).getNumber().doubleValue());
+        }
     }
 
     private float calculateProgress() {
@@ -80,7 +104,8 @@ public class SavingsItem {
     }
 
     public Color colorSavings() {
-        if (currentAmount.get().isGreaterThanOrEqualTo(goal.get())) {
+        CurrencyConversion conversion = MonetaryConversions.getConversion(currentAmount.get().getCurrency());
+        if (currentAmount.get().isGreaterThanOrEqualTo(goal.get().with(conversion))) {
             return Color.GREEN;
         } else {
             return Color.RED;
@@ -157,5 +182,21 @@ public class SavingsItem {
 
     public int getSavingsId() {
         return savingsId;
+    }
+
+    public Money getMonthlyIncrease() {
+        return monthlyIncrease.get();
+    }
+
+    public ObjectProperty<Money> monthlyIncreaseProperty() {
+        return monthlyIncrease;
+    }
+
+    public Number getMonthsToTarget() {
+        return monthsToTarget.get();
+    }
+
+    public ObjectProperty<Number> monthsToTargetProperty() {
+        return monthsToTarget;
     }
 }

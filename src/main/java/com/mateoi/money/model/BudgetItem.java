@@ -105,10 +105,9 @@ public class BudgetItem {
     }
 
     public Color colorBudget() {
-        Money zero = Money.zero(Settings.getInstance().getDefaultCurrency());
-        if (remaining.get().isGreaterThan(zero)) {
+        if (remaining.get().isPositive()) {
             return isIn() ? Color.RED : Color.GREEN;
-        } else if (remaining.get().isLessThan(zero)) {
+        } else if (remaining.get().isNegative()) {
             return isIn() ? Color.GREEN : Color.RED;
         } else {
             return Color.BLACK;

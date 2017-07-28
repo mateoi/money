@@ -3,13 +3,11 @@ package com.mateoi.money.view.controllers;
 import com.mateoi.money.model.*;
 import com.mateoi.money.view.MoneyTableCell;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
@@ -41,6 +39,15 @@ public class SavingsController extends TabController<SavingsItem> {
     @FXML
     private TableColumn<SavingsItem, Number> allocationColumn;
 
+    @FXML
+    private TableColumn<SavingsItem, Money> monthlyIncreaseColumn;
+
+    @FXML
+    private TableColumn<SavingsItem, Number> timeLeftColumn;
+
+    @FXML
+    private Label totalAllocationLabel;
+
 
     @FXML
     private void initialize() {
@@ -59,6 +66,8 @@ public class SavingsController extends TabController<SavingsItem> {
         progressColumn.setCellValueFactory(param -> param.getValue().progressProperty());
         accountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
         allocationColumn.setCellValueFactory(param -> param.getValue().allocationProperty());
+        monthlyIncreaseColumn.setCellValueFactory(param -> param.getValue().monthlyIncreaseProperty());
+        timeLeftColumn.setCellValueFactory(param -> param.getValue().monthsToTargetProperty());
 
         goalColumn.setCellFactory(TextFieldTableCell.forTableColumn(new MoneyStringConverter(() -> table.getSelectionModel().getSelectedItem().getGoal())));
         amountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getCurrentAmount(), SavingsItem::colorSavings));
@@ -83,6 +92,9 @@ public class SavingsController extends TabController<SavingsItem> {
             });
             return cell;
         });
+        monthlyIncreaseColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getMonthlyIncrease(), s -> Color.BLACK));
+        monthlyIncreaseColumn.setEditable(false);
+        totalAllocationLabel.textProperty().bind(Savings.getInstance().totalAllocationProperty());
     }
 
     @FXML
