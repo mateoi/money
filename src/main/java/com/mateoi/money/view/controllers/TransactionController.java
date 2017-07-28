@@ -3,9 +3,15 @@ package com.mateoi.money.view.controllers;
 import com.mateoi.money.model.*;
 import com.mateoi.money.view.DatePickerTableCell;
 import com.mateoi.money.view.MoneyTableCell;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
@@ -36,9 +42,105 @@ public class TransactionController extends TabController<Transaction> {
     @FXML
     private TableColumn<Transaction, BudgetItem> typeColumn;
 
+    @FXML
+    private TableView<Transaction> accountTable;
+
+    @FXML
+    private TableColumn<Transaction, LocalDate> accountDateColumn;
+
+    @FXML
+    private TableColumn<Transaction, String> accountDescriptionColumn;
+
+    @FXML
+    private TableColumn<Transaction, Money> accountAmountColumn;
+
+    @FXML
+    private TableColumn<Transaction, Money> accountBalanceColumn;
+
+    @FXML
+    private TableView<Transaction> budgetTable;
+
+    @FXML
+    private TableColumn<Transaction, LocalDate> budgetDateColumn;
+
+    @FXML
+    private TableColumn<Transaction, String> budgetDescriptionColumn;
+
+    @FXML
+    private TableColumn<Transaction, Money> budgetAmountColumn;
+
+    @FXML
+    private TableColumn<Transaction, Boolean> budgetIncludedColumn;
+
+    @FXML
+    private Label accountLabel;
+
+    @FXML
+    private Label budgetLabel;
+
+    private ObjectProperty<Transaction> selectedTransaction = new SimpleObjectProperty<>();
+
+    private ObjectProperty<Account> selectedTransactionAccount = new SimpleObjectProperty<>();
+
+    private ObjectProperty<BudgetItem> selectedTransactionType = new SimpleObjectProperty<>();
+
 
     @FXML
     private void initialize() {
+        table.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                selectedTransaction.set(newValue);
+                selectedTransactionAccount.bind(newValue.accountProperty());
+                selectedTransactionType.bind(newValue.budgetTypeProperty());
+            }
+        });
+
+        initializeMainTable();
+        initializeAccountTable();
+        initializeBudgetTable();
+        initializeLabels();
+        Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> {
+            table.refresh();
+            accountTable.refresh();
+            budgetTable.refresh();
+        });
+
+    }
+
+
+    @FXML
+    void onEditItem() {
+        Transaction transaction = table.getSelectionModel().getSelectedItem();
+        if (transaction != null) {
+            super.editItem(transaction, "/TransactionEditDialog.fxml", true);
+        }
+    }
+
+    @FXML
+    void onRemoveItem() {
+        Transaction transaction = table.getSelectionModel().getSelectedItem();
+        if (transaction != null) {
+            MainState.getInstance().getTransactions().remove(transaction);
+            transaction.getAccount().getTransactions().remove(transaction);
+            transaction.getBudgetType().getTransactions().remove(transaction);
+            MainState.getInstance().setModified(true);
+        }
+
+    }
+
+    @FXML
+    void onAddItem() {
+        int newId = MainState.getInstance().getLastTransaction() + 1;
+        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Settings.getInstance().getDefaultCurrency()), null, null, true);
+        Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
+        if (result != null) {
+            MainState.getInstance().setLastTransaction(newId);
+            MainState.getInstance().getTransactions().add(result);
+            MainState.getInstance().setModified(true);
+        }
+    }
+
+    private void initializeMainTable() {
         table.setItems(MainState.getInstance().getTransactions());
         table.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
@@ -54,7 +156,6 @@ public class TransactionController extends TabController<Transaction> {
                 }
             }
         });
-        Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> table.refresh());
 
         dateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         descriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
@@ -103,35 +204,74 @@ public class TransactionController extends TabController<Transaction> {
         });
     }
 
-    @FXML
-    void onEditItem() {
-        Transaction transaction = table.getSelectionModel().getSelectedItem();
-        if (transaction != null) {
-            super.editItem(transaction, "/TransactionEditDialog.fxml", true);
+    private void initializeBudgetTable() {
+        selectedTransactionType.addListener((a, b, newValue) -> {
+            if (newValue != null) {
+                budgetTable.setItems(newValue.getTransactions());
+            }
+        });
+
+        budgetAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
+        budgetDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
+        budgetDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
+        budgetIncludedColumn.setCellValueFactory(param -> param.getValue().includedProperty());
+
+        budgetAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> budgetTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
+        budgetDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
+        budgetDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        budgetIncludedColumn.setCellFactory(c -> new CheckBoxTableCell<>());
+    }
+
+    private void initializeAccountTable() {
+        selectedTransactionAccount.addListener((a, b, newValue) -> {
+            if (newValue != null) {
+                accountTable.setItems(newValue.getTransactions());
+                accountBalanceColumn.setCellValueFactory(param -> newValue.balanceAtTransactionProperty(param.getValue()));
+                accountTable.refresh();
+            }
+        });
+
+        accountAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
+        accountDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
+        accountDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
+        accountBalanceColumn.setCellValueFactory(param -> selectedTransactionAccount.get().balanceAtTransactionProperty(param.getValue()));
+
+        accountAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> budgetTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
+        accountDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
+        accountDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        accountBalanceColumn.setCellFactory(c -> new TableCell<Transaction, Money>() {
+            @Override
+            protected void updateItem(Money item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("");
+                } else {
+                    setText(MoneyStringConverter.formatMoney(item));
+                }
+            }
+        });
+    }
+
+    private void initializeLabels() {
+        accountLabel.textProperty().bind(Bindings.createStringBinding(this::createAccountString, selectedTransactionAccount));
+        budgetLabel.textProperty().bind(Bindings.createStringBinding(this::createBudgetString, selectedTransactionType));
+    }
+
+    private String createAccountString() {
+        Account account = selectedTransactionAccount.get();
+        if (account == null) {
+            return "";
+        } else {
+            return account.getName() + " transaction details";
         }
     }
 
-    @FXML
-    void onRemoveItem() {
-        Transaction transaction = table.getSelectionModel().getSelectedItem();
-        if (transaction != null) {
-            MainState.getInstance().getTransactions().remove(transaction);
-            transaction.getAccount().getTransactions().remove(transaction);
-            transaction.getBudgetType().getTransactions().remove(transaction);
-            MainState.getInstance().setModified(true);
-        }
-
-    }
-
-    @FXML
-    void onAddItem() {
-        int newId = MainState.getInstance().getLastTransaction() + 1;
-        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Settings.getInstance().getDefaultCurrency()), null, null, true);
-        Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
-        if (result != null) {
-            MainState.getInstance().setLastTransaction(newId);
-            MainState.getInstance().getTransactions().add(result);
-            MainState.getInstance().setModified(true);
+    private String createBudgetString() {
+        BudgetItem budgetItem = selectedTransactionType.get();
+        if (budgetItem == null) {
+            return "";
+        } else {
+            return budgetItem.getName() + " transaction details";
         }
     }
 }

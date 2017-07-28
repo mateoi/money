@@ -173,7 +173,7 @@ public class AccountsController extends TabController<Account> {
         txDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         txAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
         txTypeColumn.setCellValueFactory(param -> param.getValue().budgetTypeProperty());
-        txBalanceColumn.setCellValueFactory(param -> selectedAccount.getValue().balanceAtTransactionProperty(param.getValue()));
+        txBalanceColumn.setCellValueFactory(param -> selectedAccount.get().balanceAtTransactionProperty(param.getValue()));
 
         txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());

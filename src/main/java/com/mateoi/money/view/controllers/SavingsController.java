@@ -59,7 +59,7 @@ public class SavingsController extends TabController<SavingsItem> {
                 onRemoveItem();
             }
         });
-
+        Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> table.refresh());
         descriptionColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         goalColumn.setCellValueFactory(param -> param.getValue().goalProperty());
         amountColumn.setCellValueFactory(param -> param.getValue().currentAmountProperty());
