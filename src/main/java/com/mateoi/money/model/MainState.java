@@ -13,10 +13,15 @@ import org.javamoney.moneta.Money;
 import java.util.List;
 
 /**
- * Created by mateo on 02/07/2017.
+ * Singleton class that encodes the state of the program at a given time. It includes all current transactions,
+ * accounts, and budget and savings items. It also keeps track of the current max id for each of these types.
  */
 public class MainState {
     private final static MainState instance = new MainState();
+
+    public static final Account UNKNOWN_ACCOUNT = new Account(-1, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), Money.zero(Settings.getInstance().getDefaultCurrency()), 0f);
+
+    public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), false);
 
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
 
@@ -25,10 +30,6 @@ public class MainState {
     private ObservableList<BudgetItem> budgetItems = FXCollections.observableArrayList();
 
     private ObservableList<SavingsItem> savingsItems = FXCollections.observableArrayList();
-
-    public static final Account UNKNOWN_ACCOUNT = new Account(-1, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), Money.zero(Settings.getInstance().getDefaultCurrency()), 0f);
-
-    public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), false);
 
     private IntegerProperty lastTransaction = new SimpleIntegerProperty(0);
 

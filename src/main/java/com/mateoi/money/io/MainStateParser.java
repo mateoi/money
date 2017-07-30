@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by mateo on 06/07/2017.
+ * Singleton class used for parsing a main state and loading it.
  */
 public class MainStateParser {
     private static final MainStateParser instance = new MainStateParser();
@@ -21,10 +21,20 @@ public class MainStateParser {
         // Empty
     }
 
+    /**
+     * Get the singleton instance of this class
+     *
+     * @return
+     */
     public static MainStateParser getInstance() {
         return instance;
     }
 
+    /**
+     * Parses a main state from a list of lines, then initializes the program state.
+     *
+     * @param lines
+     */
     public void parseIntoMainState(List<String> lines) {
         List<Account> accounts = cleanLines(lines, FilePrefixes.ACCOUNT_PREFIX).map(this::parseAccount).collect(Collectors.toList());
         List<BudgetItem> budgets = cleanLines(lines, FilePrefixes.BUDGET_PREFIX).map(this::parseBudgetItem).collect(Collectors.toList());
@@ -51,6 +61,14 @@ public class MainStateParser {
         return count;
     }
 
+    /**
+     * Creates a stream of the given lines consisting only of those lines that start with the given prefix,
+     * but with the prefix removed.
+     *
+     * @param lines
+     * @param prefix
+     * @return
+     */
     private Stream<String> cleanLines(List<String> lines, String prefix) {
         return lines.stream().filter(s -> s.startsWith(prefix)).map(s -> s.substring(prefix.length()));
     }
@@ -110,6 +128,13 @@ public class MainStateParser {
         return null;
     }
 
+    /**
+     * Parses a {@link SavingsItem} from a format that should match SavingsItem's toString() function.
+     *
+     * @param s The string to parse
+     * @return A SavingsItem object encoded by this string, without Transaction information, or null if the string isn't
+     * formatted properly
+     */
     private SavingsItem parseSavingsItem(String s, List<Account> accounts) {
         String[] parts = s.trim().split(";");
         if (parts.length == 6) {
@@ -141,6 +166,13 @@ public class MainStateParser {
         return null;
     }
 
+    /**
+     * Parses a {@link Transaction} from a format that should match Transaction's toString() function.
+     *
+     * @param s The string to parse
+     * @return A Transaction object encoded by this string, or null if the string isn't
+     * formatted properly
+     */
     private Transaction parseTransaction(String s, List<Account> accounts, List<BudgetItem> budgets) {
         String[] parts = s.trim().split(";");
         if (parts.length == 7) {
@@ -180,11 +212,25 @@ public class MainStateParser {
         return null;
     }
 
+    /**
+     * Get the account with the given ID from the list of accounts, or {@link MainState#UNKNOWN_ACCOUNT} if not found.
+     *
+     * @param account_id
+     * @param accounts
+     * @return
+     */
     private Account getAccount(int account_id, List<Account> accounts) {
         List<Account> correctId = accounts.stream().filter(a -> a.getAccountId() == account_id).collect(Collectors.toList());
         return correctId.size() > 0 ? correctId.get(0) : MainState.UNKNOWN_ACCOUNT;
     }
 
+    /**
+     * Get the budget with the given ID from the list of budgets, or {@link MainState#UNKNOWN_BUDGET} if not found.
+     *
+     * @param budget_id
+     * @param budgets
+     * @return
+     */
     private BudgetItem getBudgetItem(int budget_id, List<BudgetItem> budgets) {
         List<BudgetItem> correctId = budgets.stream().filter(b -> b.getItemId() == budget_id).collect(Collectors.toList());
         return correctId.size() > 0 ? correctId.get(0) : MainState.UNKNOWN_BUDGET;

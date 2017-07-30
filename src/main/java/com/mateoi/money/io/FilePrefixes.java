@@ -1,7 +1,7 @@
 package com.mateoi.money.io;
 
 /**
- * Created by mateo on 12/07/2017.
+ * File prefixes used for save files
  */
 public class FilePrefixes {
     public static final String ACCOUNT_PREFIX = "A: ";
@@ -31,5 +31,6 @@ public class FilePrefixes {
     public static final String SETTINGS_MAX_RECENT_FILES = "MRF: ";
 
     private FilePrefixes() {
+        // private to prevent instantiation
     }
 }
