@@ -68,7 +68,7 @@ public class MainWindowController {
     }
 
     @FXML
-    private void onNew() {
+    void onNew() {
         if (MainState.getInstance().isModified()) {
             ButtonType discard = new ButtonType("Discard");
             ButtonType save = new ButtonType("Save");
@@ -93,7 +93,7 @@ public class MainWindowController {
     }
 
     @FXML
-    private void onOpen() {
+    void onOpen() {
         FileChooser chooser = new FileChooser();
         if (Settings.getInstance().getCurrentFile() != null) {
             chooser.setInitialDirectory(Settings.getInstance().getCurrentFile().getParent().toFile());
@@ -108,7 +108,7 @@ public class MainWindowController {
 
 
     @FXML
-    private void onSave() {
+    void onSave() {
         Path path = Settings.getInstance().getCurrentFile();
         if (path == null) {
             onSaveAs();
@@ -303,6 +303,7 @@ public class MainWindowController {
         tab.setContent(node);
         TabController controller = loader.getController();
         controller.setPrimaryStage(primaryStage);
+        controller.setMainWindowController(this);
         return controller;
     }
 

@@ -1,6 +1,7 @@
 package com.mateoi.money.view.controllers;
 
 import com.mateoi.money.Main;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -14,9 +15,8 @@ import java.io.IOException;
 abstract class TabController<T> {
     private Stage primaryStage;
 
-    void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
+    private MainWindowController mainWindowController;
+
 
     T editItem(T item, String fxml, boolean edit) {
         try {
@@ -42,6 +42,30 @@ abstract class TabController<T> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+
+    void setMainWindowController(MainWindowController mainWindowController) {
+        this.mainWindowController = mainWindowController;
+    }
+
+    @FXML
+    private void onSave() {
+        mainWindowController.onSave();
+    }
+
+    @FXML
+    private void onNew() {
+        mainWindowController.onNew();
+    }
+
+    @FXML
+    private void onOpen() {
+        mainWindowController.onOpen();
     }
 
     abstract void onEditItem();
