@@ -13,39 +13,94 @@ import org.javamoney.moneta.Money;
 import javax.money.CurrencyUnit;
 import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
- * Created by mateo on 30/06/2017.
+ * Represents an account. It has a starting budget and a list of transactions that detail the account history
  */
 public class Account {
+    /**
+     * ID of this account
+     */
     private final int accountId;
 
+    /**
+     * Name of this account
+     */
     private StringProperty name = new SimpleStringProperty();
 
+    /**
+     * Initial balance
+     */
     private ObjectProperty<Money> startingAmount = new SimpleObjectProperty<>();
 
+    /**
+     * Annual interest rate, as a percentage (ie. a value of 0.5 represents 0.5%, not 50%)
+     */
     private FloatProperty annualInterest = new SimpleFloatProperty();
 
+    /**
+     * List of transactions in this account
+     */
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
 
+    /**
+     * Account balance after taking into account all the transactions
+     */
     private ObjectProperty<Money> currentBalance = new SimpleObjectProperty<>();
 
+    /**
+     * Maximum historical balance
+     */
     private ObjectProperty<Money> maximumBalance = new SimpleObjectProperty<>();
 
+    /**
+     * Minimum historical balance
+     */
     private ObjectProperty<Money> minimumBalance = new SimpleObjectProperty<>();
 
+    /**
+     * Average historical balance
+     */
     private ObjectProperty<Money> averageBalance = new SimpleObjectProperty<>();
 
+    /**
+     * Average deposit to this account
+     */
     private ObjectProperty<Money> averageDeposit = new SimpleObjectProperty<>();
 
+    /**
+     * Average withdrawal from this account
+     */
     private ObjectProperty<Money> averageWithdrawal = new SimpleObjectProperty<>();
 
+    /**
+     * Map of each transaction in the account to the balance in the account at the time
+     */
     private ObservableMap<Transaction, ObjectProperty<Money>> transactionsMap = FXCollections.observableHashMap();
 
+    /**
+     * Binding of the number of transactions in this account
+     */
     private IntegerBinding txNumber = Bindings.size(transactions);
 
+    /**
+     * Balance below which the user should be warned
+     */
     private ObjectProperty<Money> warningAmount = new SimpleObjectProperty<>();
 
+    /**
+     * Create a new account
+     *
+     * @param id             The unique id
+     * @param name           The name or description of the account
+     * @param startingAmount The starting balance of the account
+     * @param warningAmount  The warning balance of the account
+     * @param interest       Annual interest
+     * @param transactions   Transactions involving this account
+     */
     public Account(int id, String name, Money startingAmount, Money warningAmount, float interest, Transaction... transactions) {
         accountId = id;
         this.name.set(name);
@@ -98,15 +153,26 @@ public class Account {
                 warningAmount.get();
     }
 
-    protected void processTransactions() {
+    /**
+     * Processes all the transactions in the list
+     */
+    void processTransactions() {
         currentBalance.set(startingAmount.getValue());
         minimumBalance.set(startingAmount.getValue());
         maximumBalance.set(startingAmount.getValue());
-        for (Transaction transaction : transactions) {
+        List<Transaction> sorted = new ArrayList<>(transactions);
+        sorted.sort(Comparator.comparing(Transaction::getDate));
+
+        for (Transaction transaction : sorted) {
             processTransaction(transaction);
         }
     }
 
+    /**
+     * Processes a single transaction: updates current and historical balances and averages
+     *
+     * @param transaction The transaction to process
+     */
     private void processTransaction(Transaction transaction) {
         CurrencyConversion conversion = MonetaryConversions.getConversion(startingAmount.get().getCurrency());
         Money amount = transaction.getAmount().with(conversion);
@@ -123,6 +189,9 @@ public class Account {
         }
     }
 
+    /**
+     * Updates historical balance and deposit and withdrawal data
+     */
     private void updateAvg() {
         Money total = startingAmount.get();
         CurrencyUnit currency = startingAmount.get().getCurrency();
@@ -150,6 +219,9 @@ public class Account {
         this.averageWithdrawal.set(averageWithdrawal);
     }
 
+    /**
+     * Updates historical max and min balance
+     */
     private void updateMaxMin() {
         CurrencyUnit currency = startingAmount.get().getCurrency();
         if (currentBalance.get().isGreaterThan(maximumBalance.get())) {
@@ -160,6 +232,11 @@ public class Account {
         }
     }
 
+    /**
+     * Returns a color for this account depending on whether the current balance is above or below the warning amount
+     *
+     * @return A color for this account
+     */
     public Color colorAccount() {
         CurrencyConversion conversion = MonetaryConversions.getConversion(currentBalance.get().getCurrency());
         if (currentBalance.get().isGreaterThan(warningAmount.get().with(conversion))) {
@@ -220,20 +297,12 @@ public class Account {
         return maximumBalance;
     }
 
-    public void setMaximumBalance(Money maximumBalance) {
-        this.maximumBalance.set(maximumBalance);
-    }
-
     public Money getMinimumBalance() {
         return minimumBalance.get();
     }
 
     public ObjectProperty<Money> minimumBalanceProperty() {
         return minimumBalance;
-    }
-
-    public void setMinimumBalance(Money minimumBalance) {
-        this.minimumBalance.set(minimumBalance);
     }
 
     public Money getAverageBalance() {
@@ -244,20 +313,12 @@ public class Account {
         return averageBalance;
     }
 
-    public void setAverageBalance(Money averageBalance) {
-        this.averageBalance.set(averageBalance);
-    }
-
     public Money getAverageDeposit() {
         return averageDeposit.get();
     }
 
     public ObjectProperty<Money> averageDepositProperty() {
         return averageDeposit;
-    }
-
-    public void setAverageDeposit(Money averageDeposit) {
-        this.averageDeposit.set(averageDeposit);
     }
 
     public Money getAverageWithdrawal() {
@@ -268,20 +329,12 @@ public class Account {
         return averageWithdrawal;
     }
 
-    public void setAverageWithdrawal(Money averageWithdrawal) {
-        this.averageWithdrawal.set(averageWithdrawal);
-    }
-
     public Money getCurrentBalance() {
         return currentBalance.get();
     }
 
     public ObjectProperty<Money> currentBalanceProperty() {
         return currentBalance;
-    }
-
-    public void setCurrentBalance(Money currentBalance) {
-        this.currentBalance.set(currentBalance);
     }
 
     public ObjectProperty<Money> balanceAtTransactionProperty(Transaction transaction) {
