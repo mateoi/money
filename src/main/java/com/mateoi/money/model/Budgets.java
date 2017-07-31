@@ -11,20 +11,38 @@ import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
 
 /**
- * Created by mateo on 20/07/2017.
+ * Useful bindings involving budgets. Singleton class.
  */
 public class Budgets {
 
+    /**
+     * Singleton instance of the class
+     */
     private final static Budgets instance = new Budgets();
 
+    /**
+     * Total money coming in
+     */
     private ObjectProperty<Money> totalIn = new SimpleObjectProperty<>();
 
+    /**
+     * Total money going out
+     */
     private ObjectProperty<Money> totalOut = new SimpleObjectProperty<>();
 
+    /**
+     * Difference between the money coming in and going out
+     */
     private ObjectProperty<Money> totalToSavings = new SimpleObjectProperty<>();
 
+    /**
+     * Total essential expenditures
+     */
     private ObjectProperty<Money> totalEssentials = new SimpleObjectProperty<>();
 
+    /**
+     * Total non-essential expenditures
+     */
     private ObjectProperty<Money> totalExtras = new SimpleObjectProperty<>();
 
     public Budgets() {

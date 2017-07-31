@@ -12,26 +12,60 @@ import javax.money.convert.CurrencyConversion;
 import javax.money.convert.MonetaryConversions;
 
 /**
- * Created by mateo on 30/06/2017.
+ * Represents a monthly budget item
  */
 public class BudgetItem {
+    /**
+     * The item's unique ID
+     */
     private final int itemId;
 
+    /**
+     * Whether this budget item is outgoing or incoming
+     */
     private BooleanProperty in = new SimpleBooleanProperty();
 
+    /**
+     * Name or description
+     */
     private StringProperty name = new SimpleStringProperty();
 
+    /**
+     * Monthly budget amount
+     */
     private ObjectProperty<Money> amount = new SimpleObjectProperty<>();
 
+    /**
+     * Amount remaining in item
+     */
     private ObjectProperty<Money> remaining = new SimpleObjectProperty<>();
 
+    /**
+     * Whether this is an essential expenditure
+     */
     private BooleanProperty essential = new SimpleBooleanProperty();
 
+    /**
+     * Transactions involving this budget item
+     */
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
 
+    /**
+     * Currency this item is in
+     */
     private CurrencyUnit currency;
 
 
+    /**
+     * Create a new budget item
+     *
+     * @param id           Unique ID
+     * @param in           Whether this is an expenditure or income
+     * @param name         Name or description
+     * @param amount       Monthly amount
+     * @param essential    Whether this is an essential expenditure (ignored if in is true)
+     * @param transactions Transactions that involve this budget item
+     */
     public BudgetItem(int id, boolean in, String name, Money amount, boolean essential, Transaction... transactions) {
         itemId = id;
         this.in.set(in);
@@ -87,6 +121,9 @@ public class BudgetItem {
                 essential.get();
     }
 
+    /**
+     * Process all transactions to calculate the remaining balance
+     */
     public void processTransactions() {
         this.remaining.set(amount.get());
         for (Transaction transaction : transactions) {
@@ -96,6 +133,11 @@ public class BudgetItem {
         }
     }
 
+    /**
+     * Process a transaction by updating the remaining balance
+     *
+     * @param transaction A transaction to process
+     */
     private void processTransaction(Transaction transaction) {
         CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
         Money amount = transaction.getAmount().with(conversion);
@@ -104,6 +146,12 @@ public class BudgetItem {
         remaining.set(balance);
     }
 
+    /**
+     * Create a color depending on the remaining budget.
+     *
+     * @return Red if there is no more money left to spend or if there is still money to earn, or green if there is no
+     * money to earn or still some money to spend
+     */
     public Color colorBudget() {
         if (remaining.get().isPositive()) {
             return isIn() ? Color.RED : Color.GREEN;

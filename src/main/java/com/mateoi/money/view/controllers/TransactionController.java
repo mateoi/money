@@ -271,7 +271,7 @@ public class TransactionController extends TabController<Transaction> {
         if (budgetItem == null) {
             return "";
         } else {
-            return budgetItem.getName() + " transaction details";
+            return budgetItem.getName() + " budget details";
         }
     }
 }
