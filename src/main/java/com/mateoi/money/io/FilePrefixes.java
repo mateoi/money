@@ -12,14 +12,6 @@ public class FilePrefixes {
 
     public static final String TRANSACTION_PREFIX = "T: ";
 
-    public static final String TX_COUNT_PREFIX = "TX_COUNT: ";
-
-    public static final String ACCOUNT_COUNT_PREFIX = "ACC_COUNT: ";
-
-    public static final String BUDGET_COUNT_PREFIX = "BUDGET_COUNT: ";
-
-    public static final String SAVINGS_COUNT_PREFIX = "SAVINGS_COUNT: ";
-
     public static final String SETTINGS_FILE_PREFIX = "F: ";
 
     public static final String SETTINGS_RECENT_FILE_PREFIX = "RF: ";

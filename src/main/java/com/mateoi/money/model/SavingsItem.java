@@ -78,7 +78,7 @@ public class SavingsItem {
     public boolean equals(Object o) {
         if (o != null && o instanceof SavingsItem) {
             SavingsItem s = (SavingsItem) o;
-            boolean ids = savingsId == s.getSavingsId();
+            boolean ids = savingsId == s.getId();
             boolean names = name.get().equals(s.getName());
             boolean goals = goal.get().equals(s.getGoal());
             boolean accounts = account.get().equals(s.getAccount());
@@ -98,7 +98,7 @@ public class SavingsItem {
                 ";" +
                 currentAmount.get().toString() +
                 ";" +
-                account.get().getAccountId() +
+                account.get().getId() +
                 ";" +
                 allocation.get();
     }
@@ -180,7 +180,7 @@ public class SavingsItem {
         this.allocation.set(allocation);
     }
 
-    public int getSavingsId() {
+    public int getId() {
         return savingsId;
     }
 

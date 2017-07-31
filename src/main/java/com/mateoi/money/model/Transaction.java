@@ -77,7 +77,7 @@ public class Transaction {
     public boolean equals(Object o) {
         if (o != null && o instanceof Transaction) {
             Transaction t = (Transaction) o;
-            boolean ids = transactionId == t.getTransactionId();
+            boolean ids = transactionId == t.getId();
             boolean dates = this.date.get().equals(t.getDate());
             boolean descriptions = this.description.get().equals(t.getDescription());
             boolean budgets = this.budgetType.get().equals(t.getBudgetType());
@@ -99,9 +99,9 @@ public class Transaction {
                 ";" +
                 amount.get().toString() +
                 ";" +
-                budgetType.get().getItemId() +
+                budgetType.get().getId() +
                 ";" +
-                account.get().getAccountId() +
+                account.get().getId() +
                 ";" +
                 included.get();
     }
@@ -180,7 +180,7 @@ public class Transaction {
         this.amount.set(amount);
     }
 
-    public int getTransactionId() {
+    public int getId() {
         return transactionId;
     }
 

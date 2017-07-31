@@ -24,7 +24,7 @@ public class MainStateParser {
     /**
      * Get the singleton instance of this class
      *
-     * @return
+     * @return The instance of this class
      */
     public static MainStateParser getInstance() {
         return instance;
@@ -33,41 +33,24 @@ public class MainStateParser {
     /**
      * Parses a main state from a list of lines, then initializes the program state.
      *
-     * @param lines
+     * @param lines The lines to parse
      */
     public void parseIntoMainState(List<String> lines) {
         List<Account> accounts = cleanLines(lines, FilePrefixes.ACCOUNT_PREFIX).map(this::parseAccount).collect(Collectors.toList());
         List<BudgetItem> budgets = cleanLines(lines, FilePrefixes.BUDGET_PREFIX).map(this::parseBudgetItem).collect(Collectors.toList());
         List<SavingsItem> savings = cleanLines(lines, FilePrefixes.SAVINGS_PREFIX).map(s -> parseSavingsItem(s, accounts)).collect(Collectors.toList());
         List<Transaction> transactions = cleanLines(lines, FilePrefixes.TRANSACTION_PREFIX).map(s -> parseTransaction(s, accounts, budgets)).collect(Collectors.toList());
-        int txCount = getCount(lines, FilePrefixes.TX_COUNT_PREFIX);
-        int accountCount = getCount(lines, FilePrefixes.ACCOUNT_COUNT_PREFIX);
-        int savingsCount = getCount(lines, FilePrefixes.SAVINGS_COUNT_PREFIX);
-        int budgetCount = getCount(lines, FilePrefixes.BUDGET_COUNT_PREFIX);
 
-        MainState.getInstance().initialize(transactions, accounts, budgets, savings, txCount, accountCount, savingsCount, budgetCount);
-    }
-
-    private int getCount(List<String> lines, String prefix) {
-        List<String> countLine = cleanLines(lines, prefix).collect(Collectors.toList());
-        int count = 0;
-        if (countLine.size() > 0) {
-            try {
-                count = Integer.parseInt(countLine.get(0));
-            } catch (NumberFormatException n) {
-                count = 0;
-            }
-        }
-        return count;
+        MainState.getInstance().initialize(transactions, accounts, budgets, savings);
     }
 
     /**
      * Creates a stream of the given lines consisting only of those lines that start with the given prefix,
      * but with the prefix removed.
      *
-     * @param lines
-     * @param prefix
-     * @return
+     * @param lines  The lines to clean
+     * @param prefix The prefix to remove
+     * @return Those lines which begin with prefix, with that prefix removed
      */
     private Stream<String> cleanLines(List<String> lines, String prefix) {
         return lines.stream().filter(s -> s.startsWith(prefix)).map(s -> s.substring(prefix.length()));
@@ -215,24 +198,22 @@ public class MainStateParser {
     /**
      * Get the account with the given ID from the list of accounts, or {@link MainState#UNKNOWN_ACCOUNT} if not found.
      *
-     * @param account_id
-     * @param accounts
-     * @return
+     * @param account_id ID of the account to fetch
+     * @param accounts   List of accounts to search in
+     * @return The account with the given ID, or UNKNOWN_ACCOUNT if not found
      */
     private Account getAccount(int account_id, List<Account> accounts) {
-        List<Account> correctId = accounts.stream().filter(a -> a.getAccountId() == account_id).collect(Collectors.toList());
-        return correctId.size() > 0 ? correctId.get(0) : MainState.UNKNOWN_ACCOUNT;
+        return accounts.stream().filter(a -> a.getId() == account_id).findFirst().orElse(MainState.UNKNOWN_ACCOUNT);
     }
 
     /**
      * Get the budget with the given ID from the list of budgets, or {@link MainState#UNKNOWN_BUDGET} if not found.
      *
-     * @param budget_id
-     * @param budgets
-     * @return
+     * @param budget_id ID of the budget to fetch
+     * @param budgets   List of budgets to search in
+     * @return The budget with the given ID, or UNKNOWN_BUDGET if not found
      */
     private BudgetItem getBudgetItem(int budget_id, List<BudgetItem> budgets) {
-        List<BudgetItem> correctId = budgets.stream().filter(b -> b.getItemId() == budget_id).collect(Collectors.toList());
-        return correctId.size() > 0 ? correctId.get(0) : MainState.UNKNOWN_BUDGET;
+        return budgets.stream().filter(b -> b.getId() == budget_id).findFirst().orElse(MainState.UNKNOWN_BUDGET);
     }
 }

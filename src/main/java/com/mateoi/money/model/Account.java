@@ -131,7 +131,7 @@ public class Account {
     public boolean equals(Object o) {
         if (o != null && o instanceof Account) {
             Account a = (Account) o;
-            boolean ids = accountId == a.getAccountId();
+            boolean ids = accountId == a.getId();
             boolean names = name.get().equals(a.getName());
             boolean starts = startingAmount.get().equals(a.getStartingAmount());
             boolean interests = annualInterest.get() == a.getAnnualInterest();
@@ -341,7 +341,7 @@ public class Account {
         return transactionsMap.get(transaction);
     }
 
-    public int getAccountId() {
+    public int getId() {
         return accountId;
     }
 

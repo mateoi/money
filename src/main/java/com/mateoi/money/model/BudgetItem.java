@@ -98,7 +98,7 @@ public class BudgetItem {
     public boolean equals(Object o) {
         if (o != null && o instanceof BudgetItem) {
             BudgetItem b = (BudgetItem) o;
-            boolean ids = itemId == b.getItemId();
+            boolean ids = itemId == b.getId();
             boolean ins = in.get() == b.isIn();
             boolean names = name.get().equals(b.getName());
             boolean amounts = amount.get().equals(b.getAmount());
@@ -227,7 +227,7 @@ public class BudgetItem {
         return transactions;
     }
 
-    public int getItemId() {
+    public int getId() {
         return itemId;
     }
 }

@@ -10,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.javamoney.moneta.Money;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -17,28 +18,64 @@ import java.util.List;
  * accounts, and budget and savings items. It also keeps track of the current max id for each of these types.
  */
 public class MainState {
+    /**
+     * Singleton instance of the class
+     */
     private final static MainState instance = new MainState();
 
+    /**
+     * Default account
+     */
     public static final Account UNKNOWN_ACCOUNT = new Account(-1, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), Money.zero(Settings.getInstance().getDefaultCurrency()), 0f);
 
+    /**
+     * Default budget
+     */
     public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), false);
 
+    /**
+     * All transactions in history
+     */
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
 
+    /**
+     * All accounts in history
+     */
     private ObservableList<Account> accounts = FXCollections.observableArrayList();
 
+    /**
+     * All budget items in history
+     */
     private ObservableList<BudgetItem> budgetItems = FXCollections.observableArrayList();
 
+    /**
+     * All savings items in history
+     */
     private ObservableList<SavingsItem> savingsItems = FXCollections.observableArrayList();
 
+    /**
+     * ID of the last transaction added
+     */
     private IntegerProperty lastTransaction = new SimpleIntegerProperty(0);
 
+    /**
+     * ID of the last account added
+     */
     private IntegerProperty lastAccount = new SimpleIntegerProperty(0);
 
+    /**
+     * ID of the last savings item added
+     */
     private IntegerProperty lastSavings = new SimpleIntegerProperty(0);
 
+    /**
+     * ID of the last budget added
+     */
     private IntegerProperty lastBudget = new SimpleIntegerProperty(0);
 
+    /**
+     * Whether the state has been modified since the last save
+     */
     private BooleanProperty modified = new SimpleBooleanProperty(false);
 
     private MainState() {
@@ -46,14 +83,14 @@ public class MainState {
         accounts.addListener((ListChangeListener<? super Account>) ch -> {
             while (ch.next()) {
                 for (Account account : ch.getRemoved()) {
-                    removeAccount(account);
+                    removeAccountFromTransactions(account);
                 }
             }
         });
         budgetItems.addListener((ListChangeListener<? super BudgetItem>) ch -> {
             while (ch.next()) {
                 for (BudgetItem budgetItem : ch.getRemoved()) {
-                    removeBudgetItem(budgetItem);
+                    removeBudgetItemFromTransactions(budgetItem);
                 }
             }
         });
@@ -96,39 +133,34 @@ public class MainState {
             sb.append(transaction.toString());
             sb.append("\n");
         }
-        sb.append(FilePrefixes.TX_COUNT_PREFIX);
-        sb.append(lastTransaction.get());
-        sb.append("\n");
-
-        sb.append(FilePrefixes.ACCOUNT_COUNT_PREFIX);
-        sb.append(lastAccount.get());
-        sb.append("\n");
-
-        sb.append(FilePrefixes.BUDGET_COUNT_PREFIX);
-        sb.append(lastBudget.get());
-        sb.append("\n");
-
-        sb.append(FilePrefixes.SAVINGS_COUNT_PREFIX);
-        sb.append(lastSavings.get());
-        sb.append("\n");
-
         return sb.toString();
     }
 
+    /**
+     * Set the program state to the given parameters
+     *
+     * @param transactions List of all transactions
+     * @param accounts     List of all accounts
+     * @param budgetItems  List of all budget items
+     * @param savings      List of all savings
+     */
     public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems,
-                           List<SavingsItem> savings, int txCount, int accountCount, int savingsCount, int budgetCount) {
+                           List<SavingsItem> savings) {
         clearAll();
         this.transactions.addAll(transactions);
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
         this.savingsItems.addAll(savings);
-        this.lastTransaction.set(txCount);
-        this.lastAccount.set(accountCount);
-        this.lastSavings.set(savingsCount);
-        this.lastBudget.set(budgetCount);
+        this.lastTransaction.set(transactions.stream().map(Transaction::getId).max(Comparator.naturalOrder()).orElse(0));
+        this.lastAccount.set(accounts.stream().map(Account::getId).max(Comparator.naturalOrder()).orElse(0));
+        this.lastSavings.set(savings.stream().map(SavingsItem::getId).max(Comparator.naturalOrder()).orElse(0));
+        this.lastBudget.set(budgetItems.stream().map(BudgetItem::getId).max(Comparator.naturalOrder()).orElse(0));
         modified.set(false);
     }
 
+    /**
+     * Reset program state to all clear
+     */
     public void clearAll() {
         this.transactions.clear();
         this.accounts.clear();
@@ -141,7 +173,13 @@ public class MainState {
         modified.set(false);
     }
 
-    private void removeBudgetItem(BudgetItem budgetItem) {
+
+    /**
+     * Update all transactions to remove references to the given budgetitem and replace them with UNKNOWN_BUDGET.
+     *
+     * @param budgetItem The item to remove
+     */
+    private void removeBudgetItemFromTransactions(BudgetItem budgetItem) {
         for (Transaction transaction : transactions) {
             if (transaction.getBudgetType().equals(budgetItem)) {
                 transaction.setBudgetType(UNKNOWN_BUDGET);
@@ -149,7 +187,12 @@ public class MainState {
         }
     }
 
-    private void removeAccount(Account account) {
+    /**
+     * Update all transactions to remove references to the given account and replace them with UNKNOWN_ACCOUNT.
+     *
+     * @param account The account to remove
+     */
+    private void removeAccountFromTransactions(Account account) {
         for (Transaction transaction : transactions) {
             if (transaction.getAccount().equals(account)) {
                 transaction.setAccount(UNKNOWN_ACCOUNT);
@@ -162,6 +205,10 @@ public class MainState {
         }
     }
 
+    /**
+     * Process all transactions: reconcile all transactions, accounts and budgets by making sure that all data
+     * structures are consistent
+     */
     private void processTransactions() {
         for (Transaction transaction : transactions) {
             if (transaction != null) {
@@ -179,32 +226,16 @@ public class MainState {
         return transactions;
     }
 
-    public void setTransactions(ObservableList<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
     public ObservableList<Account> getAccounts() {
         return accounts;
-    }
-
-    public void setAccounts(ObservableList<Account> accounts) {
-        this.accounts = accounts;
     }
 
     public ObservableList<BudgetItem> getBudgetItems() {
         return budgetItems;
     }
 
-    public void setBudgetItems(ObservableList<BudgetItem> budgetItems) {
-        this.budgetItems = budgetItems;
-    }
-
     public ObservableList<SavingsItem> getSavingsItems() {
         return savingsItems;
-    }
-
-    public void setSavingsItems(ObservableList<SavingsItem> savingsItems) {
-        this.savingsItems = savingsItems;
     }
 
     public int getLastTransaction() {
