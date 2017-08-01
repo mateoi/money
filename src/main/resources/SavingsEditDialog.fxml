@@ -76,11 +76,6 @@
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="allocationField" GridPane.columnIndex="1" GridPane.rowIndex="8">
-            <GridPane.margin>
-                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
-            </GridPane.margin>
-        </TextField>
         <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="6">
             <children>
                 <ChoiceBox fx:id="accountChoiceBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0"
@@ -90,5 +85,10 @@
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
             </GridPane.margin>
         </AnchorPane>
+        <TextField fx:id="allocationField" GridPane.columnIndex="1" GridPane.rowIndex="8">
+            <GridPane.margin>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+            </GridPane.margin>
+        </TextField>
     </children>
 </GridPane>

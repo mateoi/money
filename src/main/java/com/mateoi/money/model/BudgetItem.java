@@ -142,7 +142,11 @@ public class BudgetItem {
         CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
         Money amount = transaction.getAmount().with(conversion);
         Money balance = remaining.get();
-        balance = balance.add(amount);
+        if (isIn()) {
+            balance = balance.subtract(amount);
+        } else {
+            balance = balance.add(amount);
+        }
         remaining.set(balance);
     }
 

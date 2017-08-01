@@ -66,6 +66,16 @@
                             AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
             </children>
         </AnchorPane>
+        <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <GridPane.margin>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+            </GridPane.margin>
+        </TextField>
+        <TextField fx:id="amountField" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <GridPane.margin>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+            </GridPane.margin>
+        </TextField>
         <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="6">
             <GridPane.margin>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
@@ -88,15 +98,5 @@
         <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3"/>
         <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="5"/>
         <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="7"/>
-        <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <GridPane.margin>
-                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
-            </GridPane.margin>
-        </TextField>
-        <TextField fx:id="amountField" GridPane.columnIndex="1" GridPane.rowIndex="4">
-            <GridPane.margin>
-                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
-            </GridPane.margin>
-        </TextField>
     </children>
 </GridPane>
