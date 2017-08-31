@@ -93,6 +93,20 @@ public class TransactionEditController extends EditDialogController<Transaction>
         getDialogStage().close();
     }
 
+    @FXML
+    private void onPlusOne() {
+        LocalDate date = datePicker.getValue();
+        date = date == null ? LocalDate.now() : date;
+        datePicker.setValue(date.plusDays(1));
+    }
+
+    @FXML
+    private void onMinusOne() {
+        LocalDate date = datePicker.getValue();
+        date = date == null ? LocalDate.now() : date;
+        datePicker.setValue(date.minusDays(1));
+    }
+
     private void commitTransaction() {
         item.setDate(datePicker.getValue());
         item.setDescription(descriptionField.getText());
