@@ -194,6 +194,7 @@ public class Account {
      */
     private void updateAvg() {
         Money total = startingAmount.get();
+        Money balance = startingAmount.get();
         CurrencyUnit currency = startingAmount.get().getCurrency();
         Money totalDeposits = Money.of(0, currency);
         Money totalWithdrawals = Money.of(0, currency);
@@ -203,7 +204,8 @@ public class Account {
         for (Transaction transaction : transactions) {
             CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
             Money amount = transaction.getAmount().with(conversion);
-            total = total.add(amount);
+            balance = balance.add(amount);
+            total = total.add(balance);
             if (amount.isPositive()) {
                 totalDeposits = totalDeposits.add(amount);
                 numberOfDeposits++;
