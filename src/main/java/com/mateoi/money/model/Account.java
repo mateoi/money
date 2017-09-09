@@ -44,7 +44,7 @@ public class Account {
     /**
      * List of transactions in this account
      */
-    private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
+    private ObservableList<SubTransaction> subTransactions = FXCollections.observableArrayList();
 
     /**
      * Account balance after taking into account all the transactions
@@ -84,7 +84,7 @@ public class Account {
     /**
      * Binding of the number of transactions in this account
      */
-    private IntegerBinding txNumber = Bindings.size(transactions);
+    private IntegerBinding txNumber = Bindings.size(subTransactions);
 
     /**
      * Balance below which the user should be warned
@@ -99,9 +99,8 @@ public class Account {
      * @param startingAmount The starting balance of the account
      * @param warningAmount  The warning balance of the account
      * @param interest       Annual interest
-     * @param transactions   Transactions involving this account
      */
-    public Account(int id, String name, Money startingAmount, Money warningAmount, float interest, Transaction... transactions) {
+    public Account(int id, String name, Money startingAmount, Money warningAmount, float interest) {
         accountId = id;
         this.name.set(name);
         this.startingAmount.set(startingAmount);
@@ -112,7 +111,7 @@ public class Account {
         currentBalance.set(startingAmount);
         minimumBalance.set(startingAmount);
         maximumBalance.set(startingAmount);
-        this.transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
+        this.subTransactions.addListener((ListChangeListener<? super SubTransaction>) ch -> {
             while (ch.next()) {
                 if (ch.getAddedSize() == 1 && ch.getRemovedSize() == 0) {
                     processTransaction(ch.getAddedSubList().get(0));
@@ -121,7 +120,6 @@ public class Account {
                 }
             }
         });
-        this.transactions.addAll(transactions);
 
         this.name.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.startingAmount.addListener((a, b, c) -> MainState.getInstance().setModified(true));
@@ -160,32 +158,32 @@ public class Account {
         currentBalance.set(startingAmount.getValue());
         minimumBalance.set(startingAmount.getValue());
         maximumBalance.set(startingAmount.getValue());
-        List<Transaction> sorted = new ArrayList<>(transactions);
-        sorted.sort(Comparator.comparing(Transaction::getDate));
+        List<SubTransaction> sorted = new ArrayList<>(subTransactions);
+        sorted.sort(Comparator.comparing(subTransaction -> subTransaction.getTransaction().getDate()));
 
-        for (Transaction transaction : sorted) {
-            processTransaction(transaction);
+        for (SubTransaction subTransaction : sorted) {
+            processTransaction(subTransaction);
         }
     }
 
     /**
      * Processes a single transaction: updates current and historical balances and averages
      *
-     * @param transaction The transaction to process
+     * @param subTransaction The transaction to process
      */
-    private void processTransaction(Transaction transaction) {
+    private void processTransaction(SubTransaction subTransaction) {
         CurrencyConversion conversion = MonetaryConversions.getConversion(startingAmount.get().getCurrency());
-        Money amount = transaction.getAmount().with(conversion);
+        Money amount = subTransaction.getAmount().with(conversion);
 
         Money balance = currentBalance.get();
         balance = balance.add(amount);
         currentBalance.set(balance);
         updateMaxMin();
         updateAvg();
-        if (transactionsMap.containsKey(transaction)) {
-            transactionsMap.get(transaction).set(balance);
+        if (transactionsMap.containsKey(subTransaction.getTransaction())) {
+            transactionsMap.get(subTransaction.getTransaction()).set(balance);
         } else {
-            transactionsMap.put(transaction, new SimpleObjectProperty<>(balance));
+            transactionsMap.put(subTransaction.getTransaction(), new SimpleObjectProperty<>(balance));
         }
     }
 
@@ -201,9 +199,9 @@ public class Account {
         int numberOfDeposits = 0;
         int numberOfWithdrawals = 0;
 
-        for (Transaction transaction : transactions) {
+        for (SubTransaction subTransaction : subTransactions) {
             CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
-            Money amount = transaction.getAmount().with(conversion);
+            Money amount = subTransaction.getAmount().with(conversion);
             balance = balance.add(amount);
             total = total.add(balance);
             if (amount.isPositive()) {
@@ -214,7 +212,7 @@ public class Account {
                 numberOfWithdrawals++;
             }
         }
-        averageBalance.set(total.divide(transactions.size() + 1));
+        averageBalance.set(total.divide(subTransactions.size() + 1));
         Money averageDeposit = numberOfDeposits == 0 ? totalDeposits : totalDeposits.divide(numberOfDeposits);
         Money averageWithdrawal = numberOfWithdrawals == 0 ? totalWithdrawals : totalWithdrawals.divide(numberOfWithdrawals);
         this.averageDeposit.set(averageDeposit);
@@ -287,8 +285,8 @@ public class Account {
         this.annualInterest.set(annualInterest);
     }
 
-    public ObservableList<Transaction> getTransactions() {
-        return transactions;
+    public ObservableList<SubTransaction> getSubTransactions() {
+        return subTransactions;
     }
 
     public Money getMaximumBalance() {

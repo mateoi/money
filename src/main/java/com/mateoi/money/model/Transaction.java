@@ -2,9 +2,15 @@ package com.mateoi.money.model;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
+import javax.money.CurrencyUnit;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -18,13 +24,13 @@ public class Transaction {
 
     private StringProperty description = new SimpleStringProperty();
 
-    private ObjectProperty<Money> amount = new SimpleObjectProperty<>();
+    private ObjectProperty<Money> totalAmount = new SimpleObjectProperty<>();
 
     private ObjectProperty<BudgetItem> budgetType = new SimpleObjectProperty<>();
 
-    private ObjectProperty<Account> account = new SimpleObjectProperty<>();
-
     private BooleanProperty included = new SimpleBooleanProperty();
+
+    private ObservableList<SubTransaction> subTransactions = FXCollections.observableArrayList();
 
     private ChangeListener<Boolean> includedListener = (a, b, c) -> {
         if (budgetType.get() != null) {
@@ -32,30 +38,16 @@ public class Transaction {
         }
     };
 
-    public Transaction(int id, LocalDate date, String description, Money amount, BudgetItem budgetType, Account account, boolean included) {
+    public Transaction(int id, LocalDate date, String description, BudgetItem budgetType, boolean included) {
         this.transactionId = id;
         this.date.setValue(date);
         this.description.setValue(description);
-        this.amount.setValue(amount);
         this.budgetType.setValue(budgetType);
-        this.account.setValue(account);
         this.included.set(included);
 
-        this.amount.addListener((observable, oldValue, newValue) -> {
-            if (this.account.get() != null) {
-                this.account.get().processTransactions();
-            }
+        this.totalAmount.addListener((observable, oldValue, newValue) -> {
             if (this.budgetType.get() != null) {
                 this.budgetType.get().processTransactions();
-            }
-            MainState.getInstance().setModified(true);
-        });
-        this.account.addListener((observable, oldValue, newValue) -> {
-            if (oldValue != null) {
-                oldValue.getTransactions().remove(Transaction.this);
-            }
-            if (newValue != null) {
-                newValue.getTransactions().add(Transaction.this);
             }
             MainState.getInstance().setModified(true);
         });
@@ -72,6 +64,10 @@ public class Transaction {
         this.description.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.included.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.included.addListener(includedListener);
+        this.subTransactions.addListener((ListChangeListener<? super SubTransaction>) c -> {
+            updateTotal();
+            MainState.getInstance().setModified(true);
+        });
     }
 
     public boolean equals(Object o) {
@@ -81,10 +77,9 @@ public class Transaction {
             boolean dates = this.date.get().equals(t.getDate());
             boolean descriptions = this.description.get().equals(t.getDescription());
             boolean budgets = this.budgetType.get().equals(t.getBudgetType());
-            boolean amounts = this.amount.get().equals(t.getAmount());
-            boolean accounts = this.account.get().equals(t.getAccount());
+            boolean amounts = this.totalAmount.get().equals(t.getTotalAmount());
             boolean flushes = isIncluded() == t.isIncluded();
-            return ids && dates && descriptions && budgets && amounts && accounts && flushes;
+            return ids && dates && descriptions && budgets && amounts && flushes;
         } else {
             return false;
         }
@@ -97,22 +92,41 @@ public class Transaction {
                 ";" +
                 description.get() +
                 ";" +
-                amount.get().toString() +
-                ";" +
                 budgetType.get().getId() +
-                ";" +
-                account.get().getId() +
                 ";" +
                 included.get();
     }
 
     public Color colorTransaction() {
-        if (amount.get().isPositive()) {
+        if (totalAmount.get().isPositive()) {
             return Color.GREEN;
-        } else if (amount.get().isNegative()) {
+        } else if (totalAmount.get().isNegative()) {
             return Color.RED;
         } else {
             return Color.BLACK;
+        }
+    }
+
+    public void updateTotal() {
+        CurrencyUnit currency = getCurrency();
+        Money total = Money.zero(currency);
+        CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
+        for (SubTransaction subTransaction : subTransactions) {
+            total = total.add(subTransaction.getAmount().with(conversion));
+        }
+        totalAmount.set(total);
+    }
+
+    private CurrencyUnit getCurrency() {
+        if (subTransactions.size() == 0) {
+            return Settings.getInstance().getDefaultCurrency();
+        } else {
+            CurrencyUnit currency = subTransactions.get(0).getAmount().getCurrency();
+            if (subTransactions.stream().map(st -> st.getAmount().getCurrency()).anyMatch(c -> !c.equals(currency))) {
+                return Settings.getInstance().getDefaultCurrency();
+            } else {
+                return currency;
+            }
         }
     }
 
@@ -129,10 +143,6 @@ public class Transaction {
         return budgetType.get();
     }
 
-    public Account getAccount() {
-        return account.get();
-    }
-
     public ObjectProperty<LocalDate> dateProperty() {
         return date;
     }
@@ -146,10 +156,6 @@ public class Transaction {
         return budgetType;
     }
 
-    public ObjectProperty<Account> accountProperty() {
-        return account;
-    }
-
     public void setDate(LocalDate date) {
         this.date.set(date);
     }
@@ -158,26 +164,16 @@ public class Transaction {
         this.description.set(description);
     }
 
-
     public void setBudgetType(BudgetItem budgetType) {
         this.budgetType.set(budgetType);
     }
 
-    public void setAccount(Account account) {
-        this.account.set(account);
+    public Money getTotalAmount() {
+        return totalAmount.get();
     }
 
-
-    public Money getAmount() {
-        return amount.get();
-    }
-
-    public ObjectProperty<Money> amountProperty() {
-        return amount;
-    }
-
-    public void setAmount(Money amount) {
-        this.amount.set(amount);
+    public ObjectProperty<Money> totalAmountProperty() {
+        return totalAmount;
     }
 
     public int getId() {
@@ -196,9 +192,14 @@ public class Transaction {
         this.included.set(included);
     }
 
+    public ObservableList<SubTransaction> getSubTransactions() {
+        return subTransactions;
+    }
+
     public void silentExclude() {
         this.included.removeListener(includedListener);
         this.included.set(false);
         this.included.addListener(includedListener);
     }
+
 }

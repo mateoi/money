@@ -140,7 +140,7 @@ public class BudgetItem {
      */
     private void processTransaction(Transaction transaction) {
         CurrencyConversion conversion = MonetaryConversions.getConversion(currency);
-        Money amount = transaction.getAmount().with(conversion);
+        Money amount = transaction.getTotalAmount().with(conversion);
         Money balance = remaining.get();
         if (isIn()) {
             balance = balance.subtract(amount);

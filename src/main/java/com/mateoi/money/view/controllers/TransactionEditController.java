@@ -21,13 +21,7 @@ public class TransactionEditController extends EditDialogController<Transaction>
     private TextField descriptionField;
 
     @FXML
-    private TextField amountField;
-
-    @FXML
     private ChoiceBox<BudgetItem> typeChoiceBox;
-
-    @FXML
-    private ChoiceBox<Account> accountChoiceBox;
 
     private Money amount;
 

@@ -10,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.javamoney.moneta.Money;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,6 +19,8 @@ import java.util.List;
  * accounts, and budget and savings items. It also keeps track of the current max id for each of these types.
  */
 public class MainState {
+    //TODO: subtransaction stuff
+
     /**
      * Singleton instance of the class
      */
@@ -34,9 +37,19 @@ public class MainState {
     public static final BudgetItem UNKNOWN_BUDGET = new BudgetItem(-1, false, "Unknown", Money.zero(Settings.getInstance().getDefaultCurrency()), false);
 
     /**
+     * Default Transaction
+     */
+    public static final Transaction UNKNOWN_TRANSACTION = new Transaction(-1, LocalDate.now(), "Unknown", UNKNOWN_BUDGET, false);
+
+    /**
      * All transactions in history
      */
     private ObservableList<Transaction> transactions = FXCollections.observableArrayList();
+
+    /**
+     * All subtransactions in history
+     */
+    private ObservableList<SubTransaction> subTransactions = FXCollections.observableArrayList();
 
     /**
      * All accounts in history
@@ -74,6 +87,11 @@ public class MainState {
     private IntegerProperty lastBudget = new SimpleIntegerProperty(0);
 
     /**
+     * ID of the last subtransaction
+     */
+    private IntegerProperty lastSubTransaction = new SimpleIntegerProperty(0);
+
+    /**
      * Whether the state has been modified since the last save
      */
     private BooleanProperty modified = new SimpleBooleanProperty(false);
@@ -83,7 +101,7 @@ public class MainState {
         accounts.addListener((ListChangeListener<? super Account>) ch -> {
             while (ch.next()) {
                 for (Account account : ch.getRemoved()) {
-                    removeAccountFromTransactions(account);
+                    removeAccount(account);
                 }
             }
         });
@@ -133,28 +151,38 @@ public class MainState {
             sb.append(transaction.toString());
             sb.append("\n");
         }
+        sb.append("# Subtransactions");
+        sb.append("\n");
+        for (SubTransaction subTransaction : subTransactions) {
+            sb.append(FilePrefixes.SUBTRANSACTION_PREFIX);
+            sb.append(subTransaction.toString());
+            sb.append("\n");
+        }
         return sb.toString();
     }
 
     /**
      * Set the program state to the given parameters
      *
-     * @param transactions List of all transactions
-     * @param accounts     List of all accounts
-     * @param budgetItems  List of all budget items
-     * @param savings      List of all savings
+     * @param transactions    List of all transactions
+     * @param accounts        List of all accounts
+     * @param budgetItems     List of all budget items
+     * @param savings         List of all savings
+     * @param subTransactions
      */
     public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems,
-                           List<SavingsItem> savings) {
+                           List<SavingsItem> savings, List<SubTransaction> subTransactions) {
         clearAll();
         this.transactions.addAll(transactions);
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
         this.savingsItems.addAll(savings);
+        this.subTransactions.addAll(subTransactions);
         this.lastTransaction.set(transactions.stream().map(Transaction::getId).max(Comparator.naturalOrder()).orElse(0));
         this.lastAccount.set(accounts.stream().map(Account::getId).max(Comparator.naturalOrder()).orElse(0));
         this.lastSavings.set(savings.stream().map(SavingsItem::getId).max(Comparator.naturalOrder()).orElse(0));
         this.lastBudget.set(budgetItems.stream().map(BudgetItem::getId).max(Comparator.naturalOrder()).orElse(0));
+        this.lastSubTransaction.set(subTransactions.stream().map(SubTransaction::getId).max(Comparator.naturalOrder()).orElse(0));
         modified.set(false);
     }
 
@@ -166,10 +194,12 @@ public class MainState {
         this.accounts.clear();
         this.budgetItems.clear();
         this.savingsItems.clear();
+        this.subTransactions.clear();
         this.lastTransaction.set(0);
         this.lastAccount.set(0);
         this.lastSavings.set(0);
         this.lastBudget.set(0);
+        this.lastSubTransaction.set(0);
         modified.set(false);
     }
 
@@ -192,10 +222,10 @@ public class MainState {
      *
      * @param account The account to remove
      */
-    private void removeAccountFromTransactions(Account account) {
-        for (Transaction transaction : transactions) {
-            if (transaction.getAccount().equals(account)) {
-                transaction.setAccount(UNKNOWN_ACCOUNT);
+    private void removeAccount(Account account) {
+        for (SubTransaction subTransaction : subTransactions) {
+            if (subTransaction.getAccount().equals(account)) {
+                subTransaction.setAccount(UNKNOWN_ACCOUNT);
             }
         }
         for (SavingsItem savingsItem : savingsItems) {
@@ -212,11 +242,18 @@ public class MainState {
     private void processTransactions() {
         for (Transaction transaction : transactions) {
             if (transaction != null) {
-                if (transaction.getAccount() != null && !transaction.getAccount().getTransactions().contains(transaction)) {
-                    transaction.getAccount().getTransactions().add(transaction);
-                }
                 if (transaction.getBudgetType() != null && !transaction.getBudgetType().getTransactions().contains(transaction)) {
                     transaction.getBudgetType().getTransactions().add(transaction);
+                }
+            }
+        }
+        for (SubTransaction subTransaction : subTransactions) {
+            if (subTransaction != null) {
+                if (subTransaction.getAccount() != null && !subTransaction.getAccount().getSubTransactions().contains(subTransaction)) {
+                    subTransaction.getAccount().getSubTransactions().add(subTransaction);
+                }
+                if (subTransaction.getTransaction() != null && !subTransaction.getTransaction().getSubTransactions().contains(subTransaction)) {
+                    subTransaction.getTransaction().getSubTransactions().add(subTransaction);
                 }
             }
         }
@@ -224,6 +261,10 @@ public class MainState {
 
     public ObservableList<Transaction> getTransactions() {
         return transactions;
+    }
+
+    public ObservableList<SubTransaction> getSubTransactions() {
+        return subTransactions;
     }
 
     public ObservableList<Account> getAccounts() {
@@ -284,6 +325,18 @@ public class MainState {
 
     public void setLastBudget(int lastBudget) {
         this.lastBudget.set(lastBudget);
+    }
+
+    public int getLastSubTransaction() {
+        return lastSubTransaction.get();
+    }
+
+    public IntegerProperty lastSubTransactionProperty() {
+        return lastSubTransaction;
+    }
+
+    public void setLastSubTransaction(int lastSubTransaction) {
+        this.lastSubTransaction.set(lastSubTransaction);
     }
 
     public boolean isModified() {

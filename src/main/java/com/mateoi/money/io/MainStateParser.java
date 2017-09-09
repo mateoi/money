@@ -39,9 +39,10 @@ public class MainStateParser {
         List<Account> accounts = cleanLines(lines, FilePrefixes.ACCOUNT_PREFIX).map(this::parseAccount).collect(Collectors.toList());
         List<BudgetItem> budgets = cleanLines(lines, FilePrefixes.BUDGET_PREFIX).map(this::parseBudgetItem).collect(Collectors.toList());
         List<SavingsItem> savings = cleanLines(lines, FilePrefixes.SAVINGS_PREFIX).map(s -> parseSavingsItem(s, accounts)).collect(Collectors.toList());
-        List<Transaction> transactions = cleanLines(lines, FilePrefixes.TRANSACTION_PREFIX).map(s -> parseTransaction(s, accounts, budgets)).collect(Collectors.toList());
+        List<Transaction> transactions = cleanLines(lines, FilePrefixes.TRANSACTION_PREFIX).map(s -> parseTransaction(s, budgets)).collect(Collectors.toList());
+        List<SubTransaction> subTransactions = cleanLines(lines, FilePrefixes.SUBTRANSACTION_PREFIX).map(s -> parseSubTransaction(s, accounts, transactions)).collect(Collectors.toList());
 
-        MainState.getInstance().initialize(transactions, accounts, budgets, savings);
+        MainState.getInstance().initialize(transactions, accounts, budgets, savings, subTransactions);
     }
 
     /**
@@ -156,9 +157,9 @@ public class MainStateParser {
      * @return A Transaction object encoded by this string, or null if the string isn't
      * formatted properly
      */
-    private Transaction parseTransaction(String s, List<Account> accounts, List<BudgetItem> budgets) {
+    private Transaction parseTransaction(String s, List<BudgetItem> budgets) {
         String[] parts = s.trim().split(";");
-        if (parts.length == 7) {
+        if (parts.length == 5) {
             int id;
             try {
                 id = Integer.parseInt(parts[0]);
@@ -173,24 +174,52 @@ public class MainStateParser {
                 return null;
             }
             String description = parts[2];
-            Money amount = Money.parse(parts[3]);
             int budget_id;
             try {
-                budget_id = Integer.parseInt(parts[4]);
-            } catch (NumberFormatException n) {
-                return null;
-            }
-            int account_id;
-            try {
-                account_id = Integer.parseInt(parts[5]);
+                budget_id = Integer.parseInt(parts[3]);
             } catch (NumberFormatException n) {
                 return null;
             }
 
-            Account account = getAccount(account_id, accounts);
             BudgetItem budgetItem = getBudgetItem(budget_id, budgets);
-            boolean included = Boolean.parseBoolean(parts[6]);
-            return new Transaction(id, date, description, amount, budgetItem, account, included);
+            boolean included = Boolean.parseBoolean(parts[4]);
+            return new Transaction(id, date, description, budgetItem, included);
+        }
+        return null;
+    }
+
+    /**
+     * Parses a {@link SubTransaction} from a format that should match SubTransaction's toString() function.
+     *
+     * @param s The string to parse
+     * @return A SubTransaction object encoded by this string, or null if the string isn't
+     * formatted properly
+     */
+    private SubTransaction parseSubTransaction(String s, List<Account> accounts, List<Transaction> transactions) {
+        String[] parts = s.trim().split(";");
+        if (parts.length == 4) {
+            int id;
+            try {
+                id = Integer.parseInt(parts[0]);
+            } catch (NumberFormatException n) {
+                return null;
+            }
+            int transactionId;
+            try {
+                transactionId = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException n) {
+                return null;
+            }
+            int accountId;
+            try {
+                accountId = Integer.parseInt(parts[2]);
+            } catch (NumberFormatException n) {
+                return null;
+            }
+            Money amount = Money.parse(parts[3]);
+            Transaction transaction = getTransaction(transactionId, transactions);
+            Account account = getAccount(accountId, accounts);
+            return new SubTransaction(id, account, amount, transaction);
         }
         return null;
     }
@@ -215,5 +244,16 @@ public class MainStateParser {
      */
     private BudgetItem getBudgetItem(int budget_id, List<BudgetItem> budgets) {
         return budgets.stream().filter(b -> b.getId() == budget_id).findFirst().orElse(MainState.UNKNOWN_BUDGET);
+    }
+
+    /**
+     * Get the transaction with the given ID from the list of transactions, or {@link MainState#UNKNOWN_TRANSACTION} if not found.
+     *
+     * @param transactionId ID of the transaction to fetch
+     * @param transactions  List of transactions to search in
+     * @return The transaction with the given ID, or the default transaction if not found
+     */
+    private Transaction getTransaction(int transactionId, List<Transaction> transactions) {
+        return transactions.stream().filter(t -> t.getId() == transactionId).findFirst().orElse(MainState.UNKNOWN_TRANSACTION);
     }
 }
