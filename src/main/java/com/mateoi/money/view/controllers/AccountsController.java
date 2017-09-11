@@ -38,22 +38,22 @@ public class AccountsController extends TabController<Account> {
     private TableColumn<Account, Number> interestColumn;
 
     @FXML
-    private TableView<Transaction> transactionTable;
+    private TableView<SubTransaction> stTable;
 
     @FXML
-    private TableColumn<Transaction, String> txDescriptionColumn;
+    private TableColumn<SubTransaction, String> stDescriptionColumn;
 
     @FXML
-    private TableColumn<Transaction, LocalDate> txDateColumn;
+    private TableColumn<SubTransaction, LocalDate> stDateColumn;
 
     @FXML
-    private TableColumn<Transaction, Money> txAmountColumn;
+    private TableColumn<SubTransaction, Money> stAmountColumn;
 
     @FXML
-    private TableColumn<Transaction, BudgetItem> txTypeColumn;
+    private TableColumn<SubTransaction, BudgetItem> stTypeColumn;
 
     @FXML
-    private TableColumn<Transaction, Money> txBalanceColumn;
+    private TableColumn<SubTransaction, Money> stBalanceColumn;
 
     @FXML
     private Label nameLabel;
@@ -100,7 +100,7 @@ public class AccountsController extends TabController<Account> {
         initializeTxTable();
         Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> {
             mainTable.refresh();
-            transactionTable.refresh();
+            stTable.refresh();
         });
     }
 
@@ -129,7 +129,7 @@ public class AccountsController extends TabController<Account> {
         Account account = mainTable.getSelectionModel().getSelectedItem();
         if (account != null) {
             String text = "Are you sure you want to delete the account \"" + account.getName() + "\"?";
-            int transactions = account.getTransactions().size();
+            int transactions = account.getSubTransactions().size();
             if (transactions > 0) {
                 String addendum = "\n" + transactions + " Transaction";
                 addendum += transactions > 1 ? "s" : "";
@@ -158,7 +158,7 @@ public class AccountsController extends TabController<Account> {
 
         nameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
         amountColumn.setCellValueFactory(param -> param.getValue().currentBalanceProperty());
-        transactionsColumn.setCellValueFactory(param -> Bindings.size(param.getValue().getTransactions()));
+        transactionsColumn.setCellValueFactory(param -> Bindings.size(param.getValue().getSubTransactions()));
         interestColumn.setCellValueFactory(param -> param.getValue().annualInterestProperty());
 
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -168,18 +168,18 @@ public class AccountsController extends TabController<Account> {
     }
 
     private void initializeTxTable() {
-        selectedAccount.addListener((obs, o, newValue) -> transactionTable.setItems(newValue.getTransactions()));
-        txDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
-        txDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
-        txAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
-        txTypeColumn.setCellValueFactory(param -> param.getValue().budgetTypeProperty());
-        txBalanceColumn.setCellValueFactory(param -> selectedAccount.get().balanceAtTransactionProperty(param.getValue()));
+        selectedAccount.addListener((obs, o, newValue) -> stTable.setItems(newValue.getSubTransactions()));
+        stDescriptionColumn.setCellValueFactory(param -> param.getValue().txDescriptionProperty());
+        stDateColumn.setCellValueFactory(param -> param.getValue().txDateProperty());
+        stAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
+        stTypeColumn.setCellValueFactory(param -> param.getValue().txTypeProperty());
+        stBalanceColumn.setCellValueFactory(param -> selectedAccount.get().balanceAtTransactionProperty(param.getValue()));
 
-        txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
-        txAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> transactionTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
-        txTypeColumn.setCellFactory(c -> {
-            ChoiceBoxTableCell<Transaction, BudgetItem> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getBudgetItems());
+        stDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        stDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
+        stAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> stTable.getSelectionModel().getSelectedItem().getAmount(), SubTransaction::colorSubTransaction));
+        stTypeColumn.setCellFactory(c -> {
+            ChoiceBoxTableCell<SubTransaction, BudgetItem> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getBudgetItems());
             cell.setConverter(new StringConverter<BudgetItem>() {
                 @Override
                 public String toString(BudgetItem budget) {
@@ -196,7 +196,7 @@ public class AccountsController extends TabController<Account> {
             });
             return cell;
         });
-        txBalanceColumn.setCellFactory(c -> new TableCell<Transaction, Money>() {
+        stBalanceColumn.setCellFactory(c -> new TableCell<SubTransaction, Money>() {
             @Override
             protected void updateItem(Money item, boolean empty) {
                 super.updateItem(item, empty);

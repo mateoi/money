@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
+import java.time.LocalDate;
+
 /**
  * Created by mateo on 09/09/2017.
  */
@@ -15,17 +17,28 @@ public class SubTransaction {
 
     private ObjectProperty<Money> amount = new SimpleObjectProperty<>();
 
-    private ObjectProperty<Transaction> transaction = new SimpleObjectProperty<>();
+    private final Transaction transaction;
 
     private ObjectProperty<Money> accountBalance = new SimpleObjectProperty<>();
 
+    private ObjectProperty<LocalDate> txDate = new SimpleObjectProperty<>();
+
+    private ObjectProperty<String> txDescription = new SimpleObjectProperty<>();
+
+    private ObjectProperty<BudgetItem> txType = new SimpleObjectProperty<>();
+
     public SubTransaction(int id, Account account, Money amount, Transaction transaction) {
+        this.id = id;
+        this.transaction = transaction;
+        txDate.bindBidirectional(transaction.dateProperty());
+        txDescription.bindBidirectional(transaction.descriptionProperty());
+        txType.bindBidirectional(transaction.budgetTypeProperty());
         this.amount.addListener((observable, oldValue, newValue) -> {
             if (this.account.get() != null) {
                 this.account.get().processTransactions();
             }
-            if (this.transaction.get() != null) {
-                this.transaction.get().updateTotal();
+            if (this.transaction != null) {
+                this.transaction.updateTotal();
             }
             MainState.getInstance().setModified(true);
         });
@@ -37,13 +50,11 @@ public class SubTransaction {
             if (newValue != null) {
                 newValue.getSubTransactions().add(SubTransaction.this);
                 accountBalance.unbind();
-                accountBalance.set(newValue.balanceAtTransactionProperty(this.transaction.get()).get());
-                accountBalance.bind(newValue.balanceAtTransactionProperty(this.transaction.get()));
+                accountBalance.set(newValue.balanceAtTransactionProperty(this).get());
+                accountBalance.bind(newValue.balanceAtTransactionProperty(this));
             }
             MainState.getInstance().setModified(true);
         });
-        this.id = id;
-        this.transaction.set(transaction);
         this.account.set(account);
         this.amount.set(amount);
     }
@@ -83,15 +94,7 @@ public class SubTransaction {
     }
 
     public Transaction getTransaction() {
-        return transaction.get();
-    }
-
-    public ObjectProperty<Transaction> transactionProperty() {
         return transaction;
-    }
-
-    public void setTransaction(Transaction transaction) {
-        this.transaction.set(transaction);
     }
 
     public int getId() {
@@ -104,6 +107,30 @@ public class SubTransaction {
 
     public ObjectProperty<Money> accountBalanceProperty() {
         return accountBalance;
+    }
+
+    public LocalDate getTxDate() {
+        return txDate.get();
+    }
+
+    public ObjectProperty<LocalDate> txDateProperty() {
+        return txDate;
+    }
+
+    public String getTxDescription() {
+        return txDescription.get();
+    }
+
+    public ObjectProperty<String> txDescriptionProperty() {
+        return txDescription;
+    }
+
+    public BudgetItem getTxType() {
+        return txType.get();
+    }
+
+    public ObjectProperty<BudgetItem> txTypeProperty() {
+        return txType;
     }
 
     @Override
@@ -132,7 +159,7 @@ public class SubTransaction {
     public String toString() {
         return id +
                 ";" +
-                transaction.get().getId() +
+                transaction.getId() +
                 ";" +
                 account.get().getId() +
                 ";" +

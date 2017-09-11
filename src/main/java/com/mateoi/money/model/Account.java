@@ -79,7 +79,7 @@ public class Account {
     /**
      * Map of each transaction in the account to the balance in the account at the time
      */
-    private ObservableMap<Transaction, ObjectProperty<Money>> transactionsMap = FXCollections.observableHashMap();
+    private ObservableMap<SubTransaction, ObjectProperty<Money>> transactionsMap = FXCollections.observableHashMap();
 
     /**
      * Binding of the number of transactions in this account
@@ -180,10 +180,10 @@ public class Account {
         currentBalance.set(balance);
         updateMaxMin();
         updateAvg();
-        if (transactionsMap.containsKey(subTransaction.getTransaction())) {
-            transactionsMap.get(subTransaction.getTransaction()).set(balance);
+        if (transactionsMap.containsKey(subTransaction)) {
+            transactionsMap.get(subTransaction).set(balance);
         } else {
-            transactionsMap.put(subTransaction.getTransaction(), new SimpleObjectProperty<>(balance));
+            transactionsMap.put(subTransaction, new SimpleObjectProperty<>(balance));
         }
     }
 
@@ -337,8 +337,8 @@ public class Account {
         return currentBalance;
     }
 
-    public ObjectProperty<Money> balanceAtTransactionProperty(Transaction transaction) {
-        return transactionsMap.get(transaction);
+    public ObjectProperty<Money> balanceAtTransactionProperty(SubTransaction subTransaction) {
+        return transactionsMap.get(subTransaction);
     }
 
     public int getId() {
