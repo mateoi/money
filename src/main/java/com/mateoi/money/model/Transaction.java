@@ -117,7 +117,7 @@ public class Transaction {
         totalAmount.set(total);
     }
 
-    private CurrencyUnit getCurrency() {
+    public CurrencyUnit getCurrency() {
         if (subTransactions.size() == 0) {
             return Settings.getInstance().getDefaultCurrency();
         } else {

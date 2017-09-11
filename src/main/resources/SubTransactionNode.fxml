@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
           xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111"
-          fx:controller="com.mateoi.money.view.controllers.SubTransactionNode">
+          fx:controller="com.mateoi.money.view.controllers.SubTransactionController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER"/>
         <ColumnConstraints hgrow="NEVER" maxWidth="145.0" minWidth="10.0" prefWidth="145.0"/>

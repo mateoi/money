@@ -97,7 +97,14 @@ public class MainState {
     private BooleanProperty modified = new SimpleBooleanProperty(false);
 
     private MainState() {
-        transactions.addListener((ListChangeListener<? super Transaction>) ch -> processTransactions());
+        transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
+            while (ch.next()) {
+                for (Transaction transaction : ch.getRemoved()) {
+                    removeTransaction(transaction);
+                }
+                processTransactions();
+            }
+        });
         accounts.addListener((ListChangeListener<? super Account>) ch -> {
             while (ch.next()) {
                 for (Account account : ch.getRemoved()) {
@@ -223,6 +230,7 @@ public class MainState {
      * @param account The account to remove
      */
     private void removeAccount(Account account) {
+        accounts.remove(account);
         for (SubTransaction subTransaction : subTransactions) {
             if (subTransaction.getAccount().equals(account)) {
                 subTransaction.setAccount(UNKNOWN_ACCOUNT);
@@ -232,6 +240,17 @@ public class MainState {
             if (savingsItem.getAccount().equals(account)) {
                 savingsItem.setAccount(UNKNOWN_ACCOUNT);
             }
+        }
+    }
+
+    /**
+     * Update all transactions to remove references to the given transaction.
+     *
+     * @param transaction The transaction to remove
+     */
+    private void removeTransaction(Transaction transaction) {
+        for (SubTransaction subTransaction : transaction.getSubTransactions()) {
+            subTransaction.getAccount().getSubTransactions().remove(subTransaction);
         }
     }
 

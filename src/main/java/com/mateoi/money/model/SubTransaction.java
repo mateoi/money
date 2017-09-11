@@ -2,6 +2,7 @@ package com.mateoi.money.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.paint.Color;
 import org.javamoney.moneta.Money;
 
 /**
@@ -16,12 +17,9 @@ public class SubTransaction {
 
     private ObjectProperty<Transaction> transaction = new SimpleObjectProperty<>();
 
-    public SubTransaction(int id, Account account, Money amount, Transaction transaction) {
-        this.id = id;
-        this.transaction.set(transaction);
-        this.account.set(account);
-        this.amount.set(amount);
+    private ObjectProperty<Money> accountBalance = new SimpleObjectProperty<>();
 
+    public SubTransaction(int id, Account account, Money amount, Transaction transaction) {
         this.amount.addListener((observable, oldValue, newValue) -> {
             if (this.account.get() != null) {
                 this.account.get().processTransactions();
@@ -38,9 +36,26 @@ public class SubTransaction {
             }
             if (newValue != null) {
                 newValue.getSubTransactions().add(SubTransaction.this);
+                accountBalance.unbind();
+                accountBalance.set(newValue.balanceAtTransactionProperty(this.transaction.get()).get());
+                accountBalance.bind(newValue.balanceAtTransactionProperty(this.transaction.get()));
             }
             MainState.getInstance().setModified(true);
         });
+        this.id = id;
+        this.transaction.set(transaction);
+        this.account.set(account);
+        this.amount.set(amount);
+    }
+
+    public Color colorSubTransaction() {
+        if (amount.get().isPositive()) {
+            return Color.GREEN;
+        } else if (amount.get().isNegative()) {
+            return Color.RED;
+        } else {
+            return Color.BLACK;
+        }
     }
 
     public Account getAccount() {
@@ -81,6 +96,14 @@ public class SubTransaction {
 
     public int getId() {
         return id;
+    }
+
+    public Money getAccountBalance() {
+        return accountBalance.get();
+    }
+
+    public ObjectProperty<Money> accountBalanceProperty() {
+        return accountBalance;
     }
 
     @Override
