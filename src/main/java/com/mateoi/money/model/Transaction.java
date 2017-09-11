@@ -24,7 +24,7 @@ public class Transaction {
 
     private StringProperty description = new SimpleStringProperty();
 
-    private ObjectProperty<Money> totalAmount = new SimpleObjectProperty<>();
+    private ObjectProperty<Money> totalAmount = new SimpleObjectProperty<>(Money.zero(Settings.getInstance().getDefaultCurrency()));
 
     private ObjectProperty<BudgetItem> budgetType = new SimpleObjectProperty<>();
 

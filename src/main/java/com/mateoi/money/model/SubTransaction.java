@@ -30,6 +30,7 @@ public class SubTransaction {
     public SubTransaction(int id, Account account, Money amount, Transaction transaction) {
         this.id = id;
         this.transaction = transaction;
+        this.amount.set(amount);
         txDate.bindBidirectional(transaction.dateProperty());
         txDescription.bindBidirectional(transaction.descriptionProperty());
         txType.bindBidirectional(transaction.budgetTypeProperty());
@@ -37,11 +38,12 @@ public class SubTransaction {
             if (this.account.get() != null) {
                 this.account.get().processTransactions();
             }
-            if (this.transaction != null) {
-                this.transaction.updateTotal();
-            }
+            this.transaction.updateTotal();
             MainState.getInstance().setModified(true);
         });
+        if (account != null && !account.getSubTransactions().contains(this)) {
+            account.getSubTransactions().add(this);
+        }
 
         this.account.addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
@@ -49,14 +51,11 @@ public class SubTransaction {
             }
             if (newValue != null) {
                 newValue.getSubTransactions().add(SubTransaction.this);
-                accountBalance.unbind();
-                accountBalance.set(newValue.balanceAtTransactionProperty(this).get());
                 accountBalance.bind(newValue.balanceAtTransactionProperty(this));
             }
             MainState.getInstance().setModified(true);
         });
         this.account.set(account);
-        this.amount.set(amount);
     }
 
     public Color colorSubTransaction() {

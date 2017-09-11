@@ -8,10 +8,8 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.util.StringConverter;
 import org.javamoney.moneta.Money;
 
 import java.time.LocalDate;
@@ -66,9 +64,6 @@ public class BudgetController extends TabController<BudgetItem> {
 
     @FXML
     private TableColumn<Transaction, Money> txAmountColumn;
-
-    @FXML
-    private TableColumn<Transaction, Account> txAccountColumn;
 
     @FXML
     private TableColumn<Transaction, Boolean> txIncludedColumn;
@@ -154,31 +149,12 @@ public class BudgetController extends TabController<BudgetItem> {
         });
         txDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         txDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
-        txAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
-        txAccountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
+        txAmountColumn.setCellValueFactory(param -> param.getValue().totalAmountProperty());
         txIncludedColumn.setCellValueFactory(param -> param.getValue().includedProperty());
 
         txDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
         txDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        txAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> txTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
-        txAccountColumn.setCellFactory(c -> {
-            ChoiceBoxTableCell<Transaction, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
-            cell.setConverter(new StringConverter<Account>() {
-                @Override
-                public String toString(Account account) {
-                    return account.getName();
-                }
-
-                @Override
-                public Account fromString(String string) {
-                    return MainState.getInstance().getAccounts().stream().
-                            filter(a -> a.getName().equals(string)).
-                            findFirst().
-                            orElse(MainState.UNKNOWN_ACCOUNT);
-                }
-            });
-            return cell;
-        });
+        txAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> txTable.getSelectionModel().getSelectedItem().getTotalAmount(), Transaction::colorTransaction));
         txIncludedColumn.setCellFactory(c -> new CheckBoxTableCell<>());
     }
 

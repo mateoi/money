@@ -97,6 +97,11 @@ public class MainState {
     private BooleanProperty modified = new SimpleBooleanProperty(false);
 
     private MainState() {
+        subTransactions.addListener((ListChangeListener<? super SubTransaction>) c -> {
+            while (c.next()) {
+                processSubTransactions();
+            }
+        });
         transactions.addListener((ListChangeListener<? super Transaction>) ch -> {
             while (ch.next()) {
                 for (Transaction transaction : ch.getRemoved()) {
@@ -158,7 +163,7 @@ public class MainState {
             sb.append(transaction.toString());
             sb.append("\n");
         }
-        sb.append("# Subtransactions");
+        sb.append("# SubTransactions");
         sb.append("\n");
         for (SubTransaction subTransaction : subTransactions) {
             sb.append(FilePrefixes.SUBTRANSACTION_PREFIX);
@@ -266,6 +271,13 @@ public class MainState {
                 }
             }
         }
+    }
+
+    /**
+     * Process all subtransactions: reconcile all subtransactions, and transactions by making sure that all data
+     * structures are consistent
+     */
+    private void processSubTransactions() {
         for (SubTransaction subTransaction : subTransactions) {
             if (subTransaction != null) {
                 if (subTransaction.getAccount() != null && !subTransaction.getAccount().getSubTransactions().contains(subTransaction)) {
