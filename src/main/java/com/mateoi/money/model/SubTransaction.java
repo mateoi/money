@@ -31,6 +31,7 @@ public class SubTransaction {
         this.id = id;
         this.transaction = transaction;
         this.amount.set(amount);
+        this.account.set(account);
         txDate.bindBidirectional(transaction.dateProperty());
         txDescription.bindBidirectional(transaction.descriptionProperty());
         txType.bindBidirectional(transaction.budgetTypeProperty());
@@ -55,7 +56,9 @@ public class SubTransaction {
             }
             MainState.getInstance().setModified(true);
         });
-        this.account.set(account);
+        if (account != null) {
+            accountBalance.bind(account.balanceAtTransactionProperty(this));
+        }
     }
 
     public Color colorSubTransaction() {
@@ -139,19 +142,10 @@ public class SubTransaction {
 
         SubTransaction that = (SubTransaction) o;
 
-        if (id != that.id) return false;
-        if (account != null ? !account.equals(that.account) : that.account != null) return false;
-        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
-        return transaction != null ? transaction.equals(that.transaction) : that.transaction == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (account != null ? account.hashCode() : 0);
-        result = 31 * result + (amount != null ? amount.hashCode() : 0);
-        result = 31 * result + (transaction != null ? transaction.hashCode() : 0);
-        return result;
+        return id == that.getId() &&
+                (account.get() != null ? account.get().equals(that.getAccount()) : that.getAccount() == null) &&
+                (amount.get() != null ? amount.get().equals(that.getAmount()) : that.getAmount() == null) &&
+                (transaction != null ? transaction.equals(that.getTransaction()) : that.getTransaction() == null);
     }
 
     @Override

@@ -107,6 +107,11 @@ public class TransactionEditController extends EditDialogController<Transaction>
         item.setDescription(descriptionField.getText());
         item.setBudgetType(typeChoiceBox.getValue());
         List<SubTransaction> sts = subTransactionControllers.stream().map(SubTransactionController::getSubTransaction).collect(Collectors.toList());
+        for (SubTransaction subTransaction : item.getSubTransactions()) {
+            if (!sts.contains(subTransaction)) {
+                subTransaction.getAccount().getSubTransactions().remove(subTransaction);
+            }
+        }
         item.getSubTransactions().setAll(sts);
     }
 
@@ -121,7 +126,7 @@ public class TransactionEditController extends EditDialogController<Transaction>
     private boolean validateSubTransactions() {
         return subTransactionControllers.stream().
                 map(SubTransactionController::getSubTransaction).
-                allMatch(st -> validateSubTransaction(st));
+                allMatch(this::validateSubTransaction);
     }
 
     private boolean validateSubTransaction(SubTransaction st) {
@@ -132,12 +137,15 @@ public class TransactionEditController extends EditDialogController<Transaction>
 
     private void addSubTransaction(SubTransaction subTransaction) {
         SubTransactionController controller = SubTransactionController.createNodeController();
-        controller.setSubTransaction(subTransaction);
-        subTransactionBox.getChildren().add(controller.getNode());
-        subTransactionControllers.add(controller);
+        if (controller != null) {
+            controller.setSubTransaction(subTransaction);
+            controller.setEditor(this);
+            subTransactionBox.getChildren().add(controller.getNode());
+            subTransactionControllers.add(controller);
+        }
     }
 
-    public void removeSubTransactionNode(SubTransactionController controller) {
+    void removeSubTransactionNode(SubTransactionController controller) {
         subTransactionControllers.remove(controller);
         subTransactionBox.getChildren().remove(controller.getNode());
     }

@@ -126,6 +126,7 @@ public class MainState {
         });
     }
 
+
     public static MainState getInstance() {
         return instance;
     }
@@ -180,7 +181,7 @@ public class MainState {
      * @param accounts        List of all accounts
      * @param budgetItems     List of all budget items
      * @param savings         List of all savings
-     * @param subTransactions
+     * @param subTransactions List of all subtransactions
      */
     public void initialize(List<Transaction> transactions, List<Account> accounts, List<BudgetItem> budgetItems,
                            List<SavingsItem> savings, List<SubTransaction> subTransactions) {
@@ -258,6 +259,7 @@ public class MainState {
             subTransaction.getAccount().getSubTransactions().remove(subTransaction);
         }
     }
+
 
     /**
      * Process all transactions: reconcile all transactions, accounts and budgets by making sure that all data
