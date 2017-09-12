@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+          xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111"
+          fx:controller="com.mateoi.money.view.controllers.SubTransactionController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER"/>
+        <ColumnConstraints hgrow="NEVER" maxWidth="145.0" minWidth="10.0" prefWidth="145.0"/>
+        <ColumnConstraints hgrow="NEVER"/>
+        <ColumnConstraints hgrow="NEVER" maxWidth="144.0" minWidth="10.0" prefWidth="144.0"/>
+        <ColumnConstraints hgrow="NEVER"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER"/>
+    </rowConstraints>
+    <children>
+        <Label text="Account">
+            <padding>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </padding>
+        </Label>
+        <Label text="Amount" GridPane.columnIndex="2">
+            <padding>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </padding>
+        </Label>
+        <Button fx:id="removeButton" mnemonicParsing="false" onAction="#onRemove" text="-" GridPane.columnIndex="4">
+            <GridPane.margin>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </GridPane.margin>
+        </Button>
+        <AnchorPane GridPane.columnIndex="1">
+            <children>
+                <ChoiceBox fx:id="accountChoiceBox" layoutX="8.0" prefWidth="120.0" AnchorPane.bottomAnchor="4.0"
+                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0"/>
+            </children>
+            <padding>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </padding>
+        </AnchorPane>
+        <AnchorPane GridPane.columnIndex="3">
+            <children>
+                <TextField fx:id="amountField" prefWidth="120.0" AnchorPane.bottomAnchor="0.0"
+                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            </children>
+            <padding>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </padding>
+        </AnchorPane>
+    </children>
+</GridPane>

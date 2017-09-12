@@ -123,13 +123,13 @@
                                                         <Font name="System Bold" size="12.0" />
                                                     </font>
                                                 </Text>
-                                                <TableView fx:id="transactionTable" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                                <TableView fx:id="stTable" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
                                                     <columns>
-                                                        <TableColumn fx:id="txDateColumn" prefWidth="75.0" text="Date" />
-                                                        <TableColumn fx:id="txDescriptionColumn" prefWidth="75.0" text="Description" />
-                                                        <TableColumn fx:id="txAmountColumn" prefWidth="75.0" text="Amount" />
-                                                        <TableColumn fx:id="txTypeColumn" prefWidth="75.0" text="Type" />
-                                                        <TableColumn fx:id="txBalanceColumn" prefWidth="75.0" text="Balance" />
+                                                        <TableColumn fx:id="stDateColumn" prefWidth="75.0" text="Date" />
+                                                        <TableColumn fx:id="stDescriptionColumn" prefWidth="75.0" text="Description" />
+                                                        <TableColumn fx:id="stAmountColumn" editable="false" prefWidth="75.0" text="Amount" />
+                                                        <TableColumn fx:id="stTypeColumn" prefWidth="75.0" text="Type" />
+                                                        <TableColumn fx:id="stBalanceColumn" editable="false" prefWidth="75.0" text="Balance" />
                                                     </columns>
                                                     <GridPane.margin>
                                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

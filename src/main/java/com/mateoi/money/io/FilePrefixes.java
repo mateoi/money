@@ -12,6 +12,8 @@ public class FilePrefixes {
 
     public static final String TRANSACTION_PREFIX = "T: ";
 
+    public static final String SUBTRANSACTION_PREFIX = "ST: ";
+
     public static final String SETTINGS_FILE_PREFIX = "F: ";
 
     public static final String SETTINGS_RECENT_FILE_PREFIX = "RF: ";

@@ -37,25 +37,19 @@ public class TransactionController extends TabController<Transaction> {
     private TableColumn<Transaction, Money> amountColumn;
 
     @FXML
-    private TableColumn<Transaction, Account> accountColumn;
-
-    @FXML
     private TableColumn<Transaction, BudgetItem> typeColumn;
 
     @FXML
-    private TableView<Transaction> accountTable;
+    private TableView<SubTransaction> stTable;
 
     @FXML
-    private TableColumn<Transaction, LocalDate> accountDateColumn;
+    private TableColumn<SubTransaction, Account> stAccountColumn;
 
     @FXML
-    private TableColumn<Transaction, String> accountDescriptionColumn;
+    private TableColumn<SubTransaction, Money> stAmountColumn;
 
     @FXML
-    private TableColumn<Transaction, Money> accountAmountColumn;
-
-    @FXML
-    private TableColumn<Transaction, Money> accountBalanceColumn;
+    private TableColumn<SubTransaction, Money> stBalanceColumn;
 
     @FXML
     private TableView<Transaction> budgetTable;
@@ -73,14 +67,9 @@ public class TransactionController extends TabController<Transaction> {
     private TableColumn<Transaction, Boolean> budgetIncludedColumn;
 
     @FXML
-    private Label accountLabel;
-
-    @FXML
     private Label budgetLabel;
 
     private ObjectProperty<Transaction> selectedTransaction = new SimpleObjectProperty<>();
-
-    private ObjectProperty<Account> selectedTransactionAccount = new SimpleObjectProperty<>();
 
     private ObjectProperty<BudgetItem> selectedTransactionType = new SimpleObjectProperty<>();
 
@@ -90,18 +79,18 @@ public class TransactionController extends TabController<Transaction> {
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 selectedTransaction.set(newValue);
-                selectedTransactionAccount.bind(newValue.accountProperty());
+                stTable.setItems(newValue.getSubTransactions());
                 selectedTransactionType.bind(newValue.budgetTypeProperty());
             }
         });
 
         initializeMainTable();
-        initializeAccountTable();
+        initializeSubTransactionTable();
         initializeBudgetTable();
-        initializeLabels();
+        budgetLabel.textProperty().bind(Bindings.createStringBinding(this::createBudgetString, selectedTransactionType));
         Settings.getInstance().colorCodeProperty().addListener((a, b, c) -> {
             table.refresh();
-            accountTable.refresh();
+            stTable.refresh();
             budgetTable.refresh();
         });
 
@@ -121,21 +110,25 @@ public class TransactionController extends TabController<Transaction> {
         Transaction transaction = table.getSelectionModel().getSelectedItem();
         if (transaction != null) {
             MainState.getInstance().getTransactions().remove(transaction);
-            transaction.getAccount().getTransactions().remove(transaction);
             transaction.getBudgetType().getTransactions().remove(transaction);
+            MainState.getInstance().getSubTransactions().removeAll(transaction.getSubTransactions());
             MainState.getInstance().setModified(true);
         }
-
     }
 
     @FXML
     void onAddItem() {
         int newId = MainState.getInstance().getLastTransaction() + 1;
-        Transaction transaction = new Transaction(newId, LocalDate.now(), "", Money.zero(Settings.getInstance().getDefaultCurrency()), null, null, true);
-        Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
+        Transaction transaction = new Transaction(newId, LocalDate.now(), "", null, true);
+        int newID_st = MainState.getInstance().getLastSubTransaction() + 1;
+        MainState.getInstance().setLastSubTransaction(newID_st);
+        SubTransaction subTransaction = new SubTransaction(newID_st, null, Money.zero(transaction.getCurrency()), transaction);
+        transaction.getSubTransactions().add(subTransaction);
+        Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", false);
         if (result != null) {
             MainState.getInstance().setLastTransaction(newId);
             MainState.getInstance().getTransactions().add(result);
+            MainState.getInstance().getSubTransactions().addAll(result.getSubTransactions());
             MainState.getInstance().setModified(true);
         }
     }
@@ -159,31 +152,12 @@ public class TransactionController extends TabController<Transaction> {
 
         dateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         descriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
-        amountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
-        accountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
+        amountColumn.setCellValueFactory(param -> param.getValue().totalAmountProperty());
         typeColumn.setCellValueFactory(param -> param.getValue().budgetTypeProperty());
 
-        amountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
+        amountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> table.getSelectionModel().getSelectedItem().getTotalAmount(), Transaction::colorTransaction));
         dateColumn.setCellFactory(c -> new DatePickerTableCell<>());
         descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        accountColumn.setCellFactory(c -> {
-            ChoiceBoxTableCell<Transaction, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
-            cell.setConverter(new StringConverter<Account>() {
-                @Override
-                public String toString(Account account) {
-                    return account.getName();
-                }
-
-                @Override
-                public Account fromString(String string) {
-                    return MainState.getInstance().getAccounts().stream().
-                            filter(a -> a.getName().equals(string)).
-                            findFirst().
-                            orElse(MainState.UNKNOWN_ACCOUNT);
-                }
-            });
-            return cell;
-        });
         typeColumn.setCellFactory(c -> {
             ChoiceBoxTableCell<Transaction, BudgetItem> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getBudgetItems());
             cell.setConverter(new StringConverter<BudgetItem>() {
@@ -211,35 +185,42 @@ public class TransactionController extends TabController<Transaction> {
             }
         });
 
-        budgetAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
+        budgetAmountColumn.setCellValueFactory(param -> param.getValue().totalAmountProperty());
         budgetDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
         budgetDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
         budgetIncludedColumn.setCellValueFactory(param -> param.getValue().includedProperty());
 
-        budgetAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> budgetTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
+        budgetAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> budgetTable.getSelectionModel().getSelectedItem().getTotalAmount(), Transaction::colorTransaction));
         budgetDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
         budgetDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         budgetIncludedColumn.setCellFactory(c -> new CheckBoxTableCell<>());
     }
 
-    private void initializeAccountTable() {
-        selectedTransactionAccount.addListener((a, b, newValue) -> {
-            if (newValue != null) {
-                accountTable.setItems(newValue.getTransactions());
-                accountBalanceColumn.setCellValueFactory(param -> newValue.balanceAtTransactionProperty(param.getValue()));
-                accountTable.refresh();
-            }
+    private void initializeSubTransactionTable() {
+        stAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
+        stAccountColumn.setCellValueFactory(param -> param.getValue().accountProperty());
+        stBalanceColumn.setCellValueFactory(param -> param.getValue().accountBalanceProperty());
+
+        stAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> stTable.getSelectionModel().getSelectedItem().getAmount(), SubTransaction::colorSubTransaction));
+        stAccountColumn.setCellFactory(c -> {
+            ChoiceBoxTableCell<SubTransaction, Account> cell = new ChoiceBoxTableCell<>(MainState.getInstance().getAccounts());
+            cell.setConverter(new StringConverter<Account>() {
+                @Override
+                public String toString(Account account) {
+                    return account.getName();
+                }
+
+                @Override
+                public Account fromString(String string) {
+                    return MainState.getInstance().getAccounts().stream().
+                            filter(b -> b.getName().equals(string)).
+                            findFirst().
+                            orElse(MainState.UNKNOWN_ACCOUNT);
+                }
+            });
+            return cell;
         });
-
-        accountAmountColumn.setCellValueFactory(param -> param.getValue().amountProperty());
-        accountDateColumn.setCellValueFactory(param -> param.getValue().dateProperty());
-        accountDescriptionColumn.setCellValueFactory(param -> param.getValue().descriptionProperty());
-        accountBalanceColumn.setCellValueFactory(param -> selectedTransactionAccount.get().balanceAtTransactionProperty(param.getValue()));
-
-        accountAmountColumn.setCellFactory(MoneyTableCell.forTableColumn(() -> budgetTable.getSelectionModel().getSelectedItem().getAmount(), Transaction::colorTransaction));
-        accountDateColumn.setCellFactory(c -> new DatePickerTableCell<>());
-        accountDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        accountBalanceColumn.setCellFactory(c -> new TableCell<Transaction, Money>() {
+        stBalanceColumn.setCellFactory(c -> new TableCell<SubTransaction, Money>() {
             @Override
             protected void updateItem(Money item, boolean empty) {
                 super.updateItem(item, empty);
@@ -250,20 +231,6 @@ public class TransactionController extends TabController<Transaction> {
                 }
             }
         });
-    }
-
-    private void initializeLabels() {
-        accountLabel.textProperty().bind(Bindings.createStringBinding(this::createAccountString, selectedTransactionAccount));
-        budgetLabel.textProperty().bind(Bindings.createStringBinding(this::createBudgetString, selectedTransactionType));
-    }
-
-    private String createAccountString() {
-        Account account = selectedTransactionAccount.get();
-        if (account == null) {
-            return "";
-        } else {
-            return account.getName() + " transaction details";
-        }
     }
 
     private String createBudgetString() {
