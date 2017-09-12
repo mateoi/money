@@ -100,6 +100,7 @@ public class TransactionEditController extends EditDialogController<Transaction>
         MainState.getInstance().setLastSubTransaction(newID);
         SubTransaction subTransaction = new SubTransaction(newID, null, Money.zero(this.item.getCurrency()), this.item);
         addSubTransaction(subTransaction);
+        getDialogStage().getScene().getWindow().sizeToScene();
     }
 
     private void commitTransaction() {
@@ -148,6 +149,7 @@ public class TransactionEditController extends EditDialogController<Transaction>
     void removeSubTransactionNode(SubTransactionController controller) {
         subTransactionControllers.remove(controller);
         subTransactionBox.getChildren().remove(controller.getNode());
+        getDialogStage().getScene().getWindow().sizeToScene();
     }
 
     public void setItem(Transaction transaction) {

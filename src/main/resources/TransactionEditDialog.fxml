@@ -28,7 +28,7 @@
         <RowConstraints vgrow="NEVER" />
         <RowConstraints vgrow="NEVER" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints vgrow="SOMETIMES" />
+      <RowConstraints vgrow="ALWAYS" />
         <RowConstraints vgrow="NEVER" />
     </rowConstraints>
     <children>
@@ -120,7 +120,7 @@
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </GridPane.margin>
       </AnchorPane>
-      <VBox fx:id="subTransactionBox" minHeight="25.0" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+      <VBox fx:id="subTransactionBox" minHeight="25.0" GridPane.columnSpan="2" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS" />
       <Button mnemonicParsing="false" onAction="#onAdd" text="Add" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -101,10 +101,7 @@ public class TransactionController extends TabController<Transaction> {
     void onEditItem() {
         Transaction transaction = table.getSelectionModel().getSelectedItem();
         if (transaction != null) {
-            Transaction result = super.editItem(transaction, "/TransactionEditDialog.fxml", true);
-            if (result != null) {
-                MainState.getInstance().setModified(true);
-            }
+            super.editItem(transaction, "/TransactionEditDialog.fxml", true);
         }
     }
 

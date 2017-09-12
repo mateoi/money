@@ -64,10 +64,7 @@ public class Transaction {
         this.description.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.included.addListener((a, b, c) -> MainState.getInstance().setModified(true));
         this.included.addListener(includedListener);
-        this.subTransactions.addListener((ListChangeListener<? super SubTransaction>) c -> {
-            updateTotal();
-            MainState.getInstance().setModified(true);
-        });
+        this.subTransactions.addListener((ListChangeListener<? super SubTransaction>) c -> updateTotal());
     }
 
     public boolean equals(Object o) {
