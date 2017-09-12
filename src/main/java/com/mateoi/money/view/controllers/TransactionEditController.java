@@ -113,6 +113,8 @@ public class TransactionEditController extends EditDialogController<Transaction>
                 subTransaction.getAccount().getSubTransactions().remove(subTransaction);
             }
         }
+        MainState.getInstance().getSubTransactions().removeIf(st -> st.getTransaction().equals(item));
+        MainState.getInstance().getSubTransactions().addAll(sts);
         item.getSubTransactions().setAll(sts);
     }
 
