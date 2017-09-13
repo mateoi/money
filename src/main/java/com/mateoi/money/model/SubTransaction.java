@@ -57,7 +57,10 @@ public class SubTransaction {
             MainState.getInstance().setModified(true);
         });
         if (account != null) {
-            accountBalance.bind(account.balanceAtTransactionProperty(this));
+            ObjectProperty<Money> binding = account.balanceAtTransactionProperty((this));
+            if (binding != null && binding.get()!= null) {
+                accountBalance.bind(binding);
+            }
         }
     }
 

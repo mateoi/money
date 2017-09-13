@@ -190,6 +190,7 @@ public class MainState {
         this.accounts.addAll(accounts);
         this.budgetItems.addAll(budgetItems);
         this.savingsItems.addAll(savings);
+        subTransactions.sort(Comparator.comparing(subTransaction -> subTransaction.getTransaction().getDate()));
         this.subTransactions.addAll(subTransactions);
         this.lastTransaction.set(transactions.stream().map(Transaction::getId).max(Comparator.naturalOrder()).orElse(0));
         this.lastAccount.set(accounts.stream().map(Account::getId).max(Comparator.naturalOrder()).orElse(0));
